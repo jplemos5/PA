@@ -1,0 +1,27 @@
+fun main(args: Array<String>) {
+    val doc = Document()
+    val local = Entity("local", mutableMapOf())
+    val foreign = Entity("externo", mutableMapOf())
+    doc.addEntity(local)
+    doc.addEntity(foreign)
+    println(doc.toString())
+    doc.removeEntity(foreign)
+    println(doc.toString())
+    local.addAttribute("atributo", "1")
+    local.addAttribute("atributos", "2")
+    local.addAttribute("atributoss", "3")
+    println(local.toString())
+    local.removeAttribute("atributo")
+    println(local.toString())
+    local.changeAttribute("atributoss", "4")
+    println(local.toString())
+    foreign.addChildEntity(local)
+
+    val test1 = Entity("test1", mutableMapOf())
+    val test2 = Entity("test2", mutableMapOf())
+    foreign.addChildEntity(test1)
+    test1.addChildEntity(test2)
+    println(foreign.toString())
+    println(foreign.prettyPrint())
+
+}
