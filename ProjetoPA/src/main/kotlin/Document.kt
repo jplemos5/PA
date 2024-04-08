@@ -34,5 +34,10 @@ class Document {
         File(fileName).writeText(prettyString)
     }
 
+//    fun addAttributeToAllEntities(entityName: String, attributeName: String, attributeValue: String) {
+//        entities.forEach { it.accept(Entity.AddAttributeVisitor(entityName, attributeName, attributeValue)) }
+//    }
+
+
 
 }

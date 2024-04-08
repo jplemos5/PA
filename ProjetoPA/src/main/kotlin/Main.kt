@@ -1,3 +1,6 @@
+import Entity
+import Document
+
 fun main(args: Array<String>) {
 //    val doc = Document()
 //    val local = Entity("local", mutableMapOf())
@@ -78,24 +81,37 @@ fun main(args: Array<String>) {
     val componente3Fuc2 = Entity("componente", mutableMapOf("nome" to "Discussão", "peso" to "20%"), avaliacaoFuc2)
     avaliacaoFuc2.addChildEntity(componente3Fuc2)
 
-    // Imprimir o pretty print do documento
-    println(doc.prettyPrint())
 
-    doc.writeToFile("Teste1.xml")
+
+
 
 
     println("---------Teste Visitor-----------")
-    // Imprimir os atributos de todas as entidades
-    val attributePrinterVisitor = Entity.AttributePrinterVisitor()
-    doc.getEntities().forEach { it.accept(attributePrinterVisitor) }
+//    // Imprimir os atributos de todas as entidades
+//    val attributePrinterVisitor = Entity.AttributePrinterVisitor()
+//    doc.getEntities().forEach { it.accept(attributePrinterVisitor) }
+//
+//    println("------------------")
+//
+//    // Imprimir apenas os nomes de todas as entidades
+//    val namePrinterVisitor = Entity.NamePrinterVisitor()
+//    doc.getEntities().forEach { it.accept(namePrinterVisitor) }
 
-    println("------------------")
 
-    // Imprimir apenas os nomes de todas as entidades
-    val namePrinterVisitor = Entity.NamePrinterVisitor()
-    doc.getEntities().forEach { it.accept(namePrinterVisitor) }
+// Criar um novo Visitor para adicionar atributos à entidade desejada
+    val addAttributeVisitor = Entity.AddAttributeToEntityVisitor("fuc", "joao", "lindo")
+
+//    val addAttributeVisitor = Entity.AddAttributeToEntityVisitor("nome", "joao", "lindo")
+
+    // Aplicar o Visitor à entidade desejada no documento
+    doc.getEntities().forEach { it.accept(addAttributeVisitor) }
 
 
+    // Imprimir o documento
+    println(doc.prettyPrint())
 
+    // Escrever o documento em um arquivo
+    doc.writeToFile("Teste1.xml")
 
 }
+
