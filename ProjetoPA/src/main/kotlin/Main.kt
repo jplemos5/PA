@@ -84,4 +84,18 @@ fun main(args: Array<String>) {
     doc.writeToFile("Teste1.xml")
 
 
+    println("---------Teste Visitor-----------")
+    // Imprimir os atributos de todas as entidades
+    val attributePrinterVisitor = Entity.AttributePrinterVisitor()
+    doc.getEntities().forEach { it.accept(attributePrinterVisitor) }
+
+    println("------------------")
+
+    // Imprimir apenas os nomes de todas as entidades
+    val namePrinterVisitor = Entity.NamePrinterVisitor()
+    doc.getEntities().forEach { it.accept(namePrinterVisitor) }
+
+
+
+
 }

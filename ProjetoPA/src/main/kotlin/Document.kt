@@ -16,6 +16,10 @@ class Document {
 //        return "Entities: $entities "
 //    }
 
+    fun getEntities(): MutableList<Entity> {
+        return entities
+    }
+
     fun prettyPrint(): String {
         val stringBuilder = StringBuilder()
         stringBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")

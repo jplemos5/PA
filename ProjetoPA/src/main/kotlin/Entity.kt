@@ -8,13 +8,22 @@ class Entity {
     private val children : MutableList<Entity>
     private var parent : Entity?
 
-    fun accept(visitor: (Entity)-> Boolean) {
-        if(visitor(this))
-            children.forEach {
-                it.accept(visitor)
-            }
+    interface Visitor {
+        fun visit(entity: Entity)
     }
 
+    fun accept(visitor: Visitor) {
+        visitor.visit(this)
+        children.forEach { it.accept(visitor) }
+    }
+
+
+//    fun accept(visitor: (Entity)-> Boolean) {
+//        if(visitor(this))
+//            children.forEach {
+//                it.accept(visitor)
+//            }
+//    }
 
     constructor(name: String, attributes: MutableMap<String, String>, parent: Entity? = null ){
         this.name = name
@@ -133,5 +142,18 @@ class Entity {
         }
         return hasValues
     }
+
+    class AttributePrinterVisitor : Visitor {
+        override fun visit(entity: Entity) {
+            println("Entity: ${entity.name}, Attributes: ${entity.attributes}")
+        }
+    }
+
+    class NamePrinterVisitor : Visitor {
+        override fun visit(entity: Entity) {
+            println("Entity Name: ${entity.name}")
+        }
+    }
+
 
 }
