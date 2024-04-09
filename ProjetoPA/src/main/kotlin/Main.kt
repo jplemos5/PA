@@ -99,7 +99,7 @@ fun main(args: Array<String>) {
 
 
 // Criar um novo Visitor para adicionar atributos à entidade desejada
-    val addAttributeVisitor = Entity.AddAttributeToEntityVisitor("fuc", "joao", "lindo")
+    val addAttributeVisitor = Entity.AddAttributeToEntityVisitor("componente", "goncalo", "ganda programador meu")
 
 //    val addAttributeVisitor = Entity.AddAttributeToEntityVisitor("nome", "joao", "lindo")
 

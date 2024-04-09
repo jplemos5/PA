@@ -68,15 +68,6 @@ class Entity {
         children.remove(entity)
     }
 
-//    fun prettyPrint(): String { //TODO Correct the way we present the names
-//        var str = ""
-//        accept { entity ->
-//            if(entity is Entity)
-//                str += entity.name
-//            true
-//        }
-//        return str
-//    }
 
     override fun toString(): String {
         return "Name: $name, Attributes: $attributes, Parent: ${parent?.name ?: "null"}, Childs: $children"
@@ -85,10 +76,10 @@ class Entity {
 
 
     fun prettyPrint(indentation: Int = 0): String {
-        val indent = " ".repeat(indentation)
+        val indent = "    ".repeat(indentation)
         val stringBuilder = StringBuilder()
         if(entityHasValues(attributes)){
-            stringBuilder.append("$indent<$name ")
+            stringBuilder.append("$indent<$name")
         }else {
             stringBuilder.append("$indent<$name>")
         }
@@ -107,7 +98,7 @@ class Entity {
         if (children.isNotEmpty()) {
             children.forEach { child ->
                 stringBuilder.append("\n")
-                stringBuilder.append(child.prettyPrint(indentation + 4))
+                stringBuilder.append(child.prettyPrint(indentation + 1))
             }
             stringBuilder.append("\n$indent")
         }
@@ -154,6 +145,16 @@ class Entity {
             return true
         }
     }
+
+//    class AddAttributeToEntityVisitor(private val entityName: String, private val attributeName: String, private val attributeValue: String) : Visitor {
+//        override fun visit(entity: Entity) {
+//            if (entity.name == entityName) {
+//                entity.addAttribute(attributeName, attributeValue)
+//            }
+//            entity.children.forEach { it.accept(this) } // Recursivamente visita as entidades filhas
+//
+//        }
+//    }
 
 
 

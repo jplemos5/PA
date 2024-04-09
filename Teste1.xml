@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plano>
     <curso>Mestrado em Engenharia Informática</curso>
-    <fuc  codigo="M4310" joao="lindo">
+    <fuc codigo="M4310">
         <nome>Programação Avançada</nome>
         <ects>6.0</ects>
         <avaliacao>
-            <componente  nome="Quizzes" peso="20%"/>
-            <componente  nome="Projeto" peso="80%"/>
+            <componente nome="Quizzes" peso="20%" goncalo="ganda programador meu"/>
+            <componente nome="Projeto" peso="80%" goncalo="ganda programador meu"/>
         </avaliacao>
     </fuc>
-    <fuc  codigo="03782" joao="lindo">
+    <fuc codigo="03782">
         <nome>Dissertação</nome>
         <ects>42.0</ects>
         <avaliacao>
-            <componente  nome="Dissertação" peso="60%"/>
-            <componente  nome="Apresentação" peso="20%"/>
-            <componente  nome="Discussão" peso="20%"/>
+            <componente nome="Dissertação" peso="60%" goncalo="ganda programador meu"/>
+            <componente nome="Apresentação" peso="20%" goncalo="ganda programador meu"/>
+            <componente nome="Discussão" peso="20%" goncalo="ganda programador meu"/>
         </avaliacao>
     </fuc>
 </plano>
