@@ -35,7 +35,7 @@ class Entity {
     constructor(name: String, attributes: MutableMap<String, String>, parent: Entity? = null ){
         this.name = name
         this.attributes = attributes
-        this.children = mutableListOf<Entity>()
+        this.children = mutableListOf()
         this.parent = parent
     }
 
@@ -70,58 +70,32 @@ class Entity {
 
 
     override fun toString(): String {
-        return "Name: $name, Attributes: $attributes, Parent: ${parent?.name ?: "null"}, Childs: $children"
+        return "Name: $name, Attributes: $attributes, Parent: ${parent?.name ?: "null"}, Children: $children"
     }
-
-
 
     fun prettyPrint(indentation: Int = 0): String {
         val indent = "    ".repeat(indentation)
-        val stringBuilder = StringBuilder()
-        if(entityHasValues(attributes)){
-            stringBuilder.append("$indent<$name")
-        }else {
-            stringBuilder.append("$indent<$name>")
-        }
-        if (attributes.isNotEmpty()) {
-            attributes.forEach { (key, value) ->
-                if(value.isNotBlank()) {
-                    stringBuilder.append(" $key=\"$value\"")
-                } else {
-                    stringBuilder.append("$key")
-                }
-            }
-            if(children.isNotEmpty()){
-                stringBuilder.append(">")
-            }
-        }
-        if (children.isNotEmpty()) {
-            children.forEach { child ->
-                stringBuilder.append("\n")
-                stringBuilder.append(child.prettyPrint(indentation + 1))
-            }
-            stringBuilder.append("\n$indent")
-        }
-        if(!entityHasValues(attributes)) {
-            stringBuilder.append("</$name>")
-        }else{
-            if(children.isEmpty()) {
-                stringBuilder.append("/>")
-            }else{
-                stringBuilder.append("</$name>")
-            }
-
+        val stringBuilder = StringBuilder("$indent<$name").apply {
+            if (attributes.all { it.value.isBlank() }) append(">")
+            goThroughChildren(placeAttributes(this), indentation, indent)
+            append(if (attributes.all { it.value.isBlank() } || children.isNotEmpty()) "</$name>" else "/>")
         }
         return stringBuilder.toString()
     }
 
-    fun entityHasValues(attributes: MutableMap<String, String>): Boolean{
-        var hasValues = false
-        attributes.forEach{ (key, value) ->
-            if(value.isNotBlank())
-                hasValues = true
+    private fun placeAttributes(stringBuilder: StringBuilder) : StringBuilder {
+        if (attributes.isNotEmpty()) {
+            attributes.forEach { (key, value) -> stringBuilder.append(if (value.isNotBlank()) " $key=\"$value\"" else key) }
+            stringBuilder.append( if(children.isNotEmpty()) ">" else "")
         }
-        return hasValues
+        return stringBuilder
+    }
+    private fun goThroughChildren(stringBuilder: StringBuilder, indentation: Int, indent:String) : StringBuilder{
+        if (children.isNotEmpty()) {
+            children.forEach { child -> stringBuilder.append("\n" + child.prettyPrint(indentation + 1))}
+            stringBuilder.append("\n$indent")
+        }
+        return stringBuilder
     }
 
     class AttributePrinterVisitor : Visitor {
@@ -138,10 +112,9 @@ class Entity {
 
     class AddAttributeToEntityVisitor(private val entityName: String, private val attributeName: String, private val attributeValue: String) : (Entity) -> Boolean {
         override fun invoke(entity: Entity): Boolean {
-            if (entity.name == entityName) {
+            if (entity.name == entityName)
                 entity.addAttribute(attributeName, attributeValue)
-            }
-            entity.children.forEach { it.accept(this) } // Recursivamente visita as entidades filhas
+            entity.children.forEach { it.accept(this) } // Recursively visits children entities
             return true
         }
     }
@@ -151,14 +124,9 @@ class Entity {
 //            if (entity.name == entityName) {
 //                entity.addAttribute(attributeName, attributeValue)
 //            }
-//            entity.children.forEach { it.accept(this) } // Recursivamente visita as entidades filhas
+//            entity.children.forEach { it.accept(this) } // Recursively visits children entities
 //
 //        }
 //    }
-
-
-
-
-
 
 }
