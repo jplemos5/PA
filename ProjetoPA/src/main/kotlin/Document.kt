@@ -1,16 +1,8 @@
 import java.io.File
 import java.lang.StringBuilder
 
-class Document {
-    private val entity: Entity
-    private var  version : String
-    private var encoding : String
-
-    constructor(name: String, version: String, encoding: String){
-        this.entity = Entity(name)
-        this.version = version
-        this.encoding = encoding
-    }
+class Document(name: String, private var version: String, private var encoding: String) {
+    private val entity: Entity = Entity(name)
 
     fun getVersion() : String = version
 
@@ -29,11 +21,5 @@ class Document {
     fun prettyPrint(): String = StringBuilder("<?xml version=\"$version\" encoding=\"$encoding\"?>\n" + entity.prettyPrint()).toString()
 
     fun writeToFile(fileName: String) = File(fileName).writeText(prettyPrint())
-
-//    fun addAttributeToAllEntities(entityName: String, attributeName: String, attributeValue: String) {
-//        entities.forEach { it.accept(Entity.AddAttributeVisitor(entityName, attributeName, attributeValue)) }
-//    }
-
-
 
 }

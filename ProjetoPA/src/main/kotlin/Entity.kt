@@ -1,90 +1,89 @@
-class Entity {
+class Entity(private var name: String, private var attributes: MutableMap<String, String?> = mutableMapOf() , private var parent: Entity? = null ) {
 
-    private val name: String
-    private val attributes: MutableMap<String, String>
-    private val children : MutableList<Entity>
-    private var parent : Entity?
+    private var children: MutableList<Entity> = mutableListOf()
 
-    fun accept(visitor: Visitor){
-        visitor.visit(this)
-        children.forEach{ it.accept(visitor)}
-    }
+    fun getName(): String = this.name
 
-    fun getName(): String {
-        return this.name
-    }
+    fun getAttributes(): MutableMap<String, String?> = this.attributes
 
-    fun getAttributes(): MutableMap<String, String> {
-        return this.attributes
-    }
+    fun getChildren(): MutableList<Entity> = this.children
 
-    fun getChildren(): MutableList<Entity> {
-        return this.children
-    }
+    fun getParent(): Entity? = this.parent
 
-    fun getParent(): Entity? {
-        return this.parent
-    }
-
-    interface Visitor {
-        fun visit(entity: Entity)
-    }
-
-    constructor(name: String, attributes: MutableMap<String, String> = mutableMapOf() , parent: Entity? = null ){
+    private fun setName(name: String){
         this.name = name
-        this.attributes = attributes
-        this.children = mutableListOf()
-        this.parent = parent
     }
 
-    
     private fun setParent(parent: Entity?){
         this.parent = parent
     }
 
-//    fun addAttribute(attribute: String, value: String) =
-//        attributes.put(attribute, value)
-
-    fun addAttribute(attributeName: String, attributeValue: String) {
-        attributes[attributeName] = attributeValue
+    fun getText() : String {
+        if(attributes.size == 1 && attributes.values.first() === "") return attributes.keys.first()
+        return "Doesn't have text!"
     }
+
+    fun addAttribute(attributeName: String, attributeValue: String?) = attributes.put(attributeName, attributeValue)
 
     fun removeAttribute(attribute : String) = attributes.remove(attribute)
 
     fun changeAttribute(attribute : String, value : String) = attributes.replace(attribute, value)
+
+    private fun changeAttributeName(oldName : String, newName : String){
+        val value = attributes.remove(oldName)// TODO saber se vale a pena tentar manter a ordem
+        addAttribute(newName, value)
+    }
 
     fun addChildEntity(entity: Entity) {
         children.add(entity)
         entity.setParent(this)
     }
 
-    fun removeChildEntity(entity: Entity) {
+    private fun removeChildEntity(entity: Entity) {
         entity.setParent(null)
-        children.remove(entity)
+//        children.remove(entity)
     }
+
+    private fun attributesAreBlank() =  attributes.all { it.value.isNullOrBlank() }
 
 
     override fun toString(): String {
         return "Name: $name, Attributes: $attributes, Parent: ${parent?.name ?: "null"}, Children: $children"
     }
 
+    interface Visitor {
+        fun visit(entity: Entity)
+    }
+
+    private fun visitor(visitor: (Entity) -> Unit) = object : Visitor {
+        override fun visit(entity: Entity) {
+            visitor(entity)
+        }
+    }
+
+    private fun accept(visitor: Visitor){
+        visitor.visit(this)
+        children.forEach{ it.accept(visitor)}
+    }
+
     fun prettyPrint(indentation: Int = 0): String {
         val indent = "    ".repeat(indentation)
         val stringBuilder = StringBuilder("$indent<$name").apply {
-            if (attributes.all { it.value.isBlank() }) append(">")
+            if (attributesAreBlank()) append(">")
             goThroughChildren(placeAttributes(this), indentation, indent)
-            append(if (attributes.all { it.value.isBlank() } || children.isNotEmpty()) "</$name>" else "/>")
+            append(if (attributesAreBlank() || children.isNotEmpty()) "</$name>" else "/>")
         }
         return stringBuilder.toString()
     }
 
     private fun placeAttributes(stringBuilder: StringBuilder) : StringBuilder {
         if (attributes.isNotEmpty()) {
-            attributes.forEach { (key, value) -> stringBuilder.append(if (value.isNotBlank()) " $key=\"$value\"" else key) }
+            attributes.forEach { (key, value) -> stringBuilder.append(if (value.isNullOrBlank()) key else " $key=\"$value\"") }
             stringBuilder.append( if(children.isNotEmpty()) ">" else "")
         }
         return stringBuilder
     }
+
     private fun goThroughChildren(stringBuilder: StringBuilder, indentation: Int, indent:String) : StringBuilder{
         if (children.isNotEmpty()) {
             children.forEach { child -> stringBuilder.append("\n" + child.prettyPrint(indentation + 1))}
@@ -93,25 +92,52 @@ class Entity {
         return stringBuilder
     }
 
-
-    private fun visitor(visitor: (Entity) -> Unit) = object : Visitor {
-        override fun visit(entity: Entity) {
-            visitor(entity)
-        }
-    }
-
     fun attributePrinter() =
         accept(visitor { println("Entity: $name, Attributes: $attributes") })
-
 
     fun namePrinter() =
         accept(visitor { println("Entity Name: $name") })
 
-
-    fun addAttributeToEntity(entityName: String,  attributeName: String,  attributeValue: String){
+    fun globalAddAttributeToEntity(entityName: String,  attributeName: String,  attributeValue: String){
         val v = visitor { entity ->
-            if (entity.name == entityName && !entity.attributes.all {it.value.isBlank()})
+            if (entity.name == entityName && !attributesAreBlank())
                 entity.addAttribute(attributeName, attributeValue)
+        }
+        accept(v)
+    }
+
+    fun globalRenameEntity(entityOldName: String,  entityNewName: String){
+        if(this.parent != null) { //TODO Perguntar ao stor se vale a pena ou n. E no adicionar Entidade?
+            val v = visitor { entity ->
+                if (entity.name == entityOldName)
+                    entity.setName(entityNewName)
+            }
+            accept(v)
+        }
+    }
+
+    fun globalRenameAttribute(entityName: String,  attributeOldName: String,  attributeNewName: String){
+        val v = visitor { entity ->
+            if (entity.name == entityName && entity.attributes.contains(attributeOldName))
+                entity.changeAttributeName(attributeOldName, attributeNewName)
+        }
+        accept(v)
+    }
+
+    fun globalRemoveEntity(entityName: String){
+        val v = visitor { entity ->
+            for (child in entity.children) {
+                if(child.name == entityName)
+                    entity.removeChildEntity(child)
+            }
+        }
+        accept(v)
+    }
+
+    fun globalRemoveAttribute(entityName: String, attributeName : String){
+        val v = visitor { entity ->
+            if(entity.name == entityName && entity.attributes.contains(attributeName) && !entity.attributesAreBlank())
+                entity.removeAttribute(attributeName)
         }
         accept(v)
     }

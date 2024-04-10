@@ -30,18 +30,18 @@ fun main(args: Array<String>) {
 
 
     val curso = Entity("curso", mutableMapOf())
-    curso.addAttribute("Mestrado em Engenharia Informática", "")
+    curso.addAttribute("Mestrado em Engenharia Informática", null)
     doc.getRootEntity().addChildEntity(curso)
 
     val fuc1 = Entity("fuc", mutableMapOf("codigo" to "M4310"))
     doc.getRootEntity().addChildEntity(fuc1)
 
     val nomeFuc1 = Entity("nome", mutableMapOf(), fuc1)
-    nomeFuc1.addAttribute("Programação Avançada", "")
+    nomeFuc1.addAttribute("Programação Avançada", null)
     fuc1.addChildEntity(nomeFuc1)
 
     val ectsFuc1 = Entity("ects", mutableMapOf(), fuc1)
-    ectsFuc1.addAttribute("6.0", "")
+    ectsFuc1.addAttribute("6.0", null)
     fuc1.addChildEntity(ectsFuc1)
 
     val avaliacaoFuc1 = Entity("avaliacao", mutableMapOf(), fuc1)
@@ -61,14 +61,16 @@ fun main(args: Array<String>) {
     fuc2.addChildEntity(nomeFuc2)
 
     val ectsFuc2 = Entity("ects", mutableMapOf(), fuc2)
-    ectsFuc2.addAttribute("42.0", "")
+    ectsFuc2.addAttribute("42.0", null)
     fuc2.addChildEntity(ectsFuc2)
+
 
     val avaliacaoFuc2 = Entity("avaliacao", mutableMapOf(), fuc2)
     fuc2.addChildEntity(avaliacaoFuc2)
 
     val componente1Fuc2 = Entity("componente", mutableMapOf("nome" to "Dissertação", "peso" to "60%"), avaliacaoFuc2)
     avaliacaoFuc2.addChildEntity(componente1Fuc2)
+    println(avaliacaoFuc2.getText())
 
     val componente2Fuc2 = Entity("componente", mutableMapOf("nome" to "Apresentação", "peso" to "20%"), avaliacaoFuc2)
     avaliacaoFuc2.addChildEntity(componente2Fuc2)
@@ -101,7 +103,11 @@ fun main(args: Array<String>) {
     // Aplicar o Visitor à entidade desejada no documento
     //doc.getEntities().forEach { it.accept(addAttributeVisitor) }
 
-    doc.getRootEntity().addAttributeToEntity("componente", "teste", "2") //TODO temos bug aqui!
+//    doc.getRootEntity().addAttributeToEntity("componente", "teste", "2")
+//    doc.getRootEntity().renameEntity("plano", "teste")
+//    doc.getRootEntity().renameAttribute("componente", "nome", "Testttttt" )
+    doc.getRootEntity().globalRemoveEntity("componente")
+//    doc.getRootEntity().globalRemoveAttribute("componente", "peso")
     // Imprimir o documento
     println(doc.prettyPrint())
 
