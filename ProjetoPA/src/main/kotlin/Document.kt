@@ -2,37 +2,33 @@ import java.io.File
 import java.lang.StringBuilder
 
 class Document {
+    private val entity: Entity
+    private var  version : String
+    private var encoding : String
 
-    private val entities: MutableList<Entity> = mutableListOf<Entity>()
-
-    fun addEntity(entity: Entity) =
-        entities.add(entity)
-
-
-    fun removeEntity(entity: Entity) =
-        entities.remove(entity)
-
-//    override fun toString(): String {
-//        return "Entities: $entities "
-//    }
-
-    fun getEntities(): MutableList<Entity> {
-        return entities
+    constructor(name: String, version: String, encoding: String){
+        this.entity = Entity(name)
+        this.version = version
+        this.encoding = encoding
     }
 
-    fun prettyPrint(): String {
-        val stringBuilder = StringBuilder()
-        stringBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-        entities.forEach { entity ->
-            stringBuilder.append(entity.prettyPrint())
-        }
-        return stringBuilder.toString()
+    fun getVersion() : String = version
+
+    fun getEncoding() : String = encoding
+
+    fun setVersion(version: String) {
+        this.version = version
     }
 
-    fun writeToFile(fileName: String) {
-        val prettyString = prettyPrint()
-        File(fileName).writeText(prettyString)
+    fun setEncoding(encoding: String) {
+        this.encoding = encoding
     }
+
+    fun getRootEntity(): Entity = entity
+
+    fun prettyPrint(): String = StringBuilder("<?xml version=\"$version\" encoding=\"$encoding\"?>\n" + entity.prettyPrint()).toString()
+
+    fun writeToFile(fileName: String) = File(fileName).writeText(prettyPrint())
 
 //    fun addAttributeToAllEntities(entityName: String, attributeName: String, attributeValue: String) {
 //        entities.forEach { it.accept(Entity.AddAttributeVisitor(entityName, attributeName, attributeValue)) }

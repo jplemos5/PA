@@ -1,6 +1,3 @@
-import Entity
-import Document
-
 fun main(args: Array<String>) {
 //    val doc = Document()
 //    val local = Entity("local", mutableMapOf())
@@ -26,20 +23,18 @@ fun main(args: Array<String>) {
 //    test1.addChildEntity(test2)
 //    println(foreign.toString())
 //    println(foreign.prettyPrint())
-
     // Criar um novo documento
-    val doc = Document()
+    val doc = Document("plano", "1.0", "UTF-8")
 
     // Criar as entidades e adicionar ao documento
-    val plano = Entity("plano", mutableMapOf(), null)
-    doc.addEntity(plano)
 
-    val curso = Entity("curso", mutableMapOf(), plano)
+
+    val curso = Entity("curso", mutableMapOf())
     curso.addAttribute("Mestrado em Engenharia Informática", "")
-    plano.addChildEntity(curso)
+    doc.getRootEntity().addChildEntity(curso)
 
-    val fuc1 = Entity("fuc", mutableMapOf("codigo" to "M4310"), plano)
-    plano.addChildEntity(fuc1)
+    val fuc1 = Entity("fuc", mutableMapOf("codigo" to "M4310"))
+    doc.getRootEntity().addChildEntity(fuc1)
 
     val nomeFuc1 = Entity("nome", mutableMapOf(), fuc1)
     nomeFuc1.addAttribute("Programação Avançada", "")
@@ -58,8 +53,8 @@ fun main(args: Array<String>) {
     val componente2Fuc1 = Entity("componente", mutableMapOf("nome" to "Projeto", "peso" to "80%"), avaliacaoFuc1)
     avaliacaoFuc1.addChildEntity(componente2Fuc1)
 
-    val fuc2 = Entity("fuc", mutableMapOf("codigo" to "03782"), plano)
-    plano.addChildEntity(fuc2)
+    val fuc2 = Entity("fuc", mutableMapOf("codigo" to "03782"))
+    doc.getRootEntity().addChildEntity(fuc2)
 
     val nomeFuc2 = Entity("nome", mutableMapOf(), fuc2)
     nomeFuc2.addAttribute("Dissertação", "")
@@ -94,19 +89,19 @@ fun main(args: Array<String>) {
 //    println("------------------")
 //
 //    // Imprimir apenas os nomes de todas as entidades
-//    val namePrinterVisitor = Entity.NamePrinterVisitor()
-//    doc.getEntities().forEach { it.accept(namePrinterVisitor) }
+//    doc.getEntities().forEach { it.namePrinter() }
 
 
 // Criar um novo Visitor para adicionar atributos à entidade desejada
-    val addAttributeVisitor = Entity.AddAttributeToEntityVisitor("componente", "goncalo", "ganda programador meu")
+    //val addAttributeVisitor = Entity.AddAttributeToEntityVisitor("componente", "goncalo", "ganda programador meu")
+
 
 //    val addAttributeVisitor = Entity.AddAttributeToEntityVisitor("nome", "joao", "lindo")
 
     // Aplicar o Visitor à entidade desejada no documento
-    doc.getEntities().forEach { it.accept(addAttributeVisitor) }
+    //doc.getEntities().forEach { it.accept(addAttributeVisitor) }
 
-
+    doc.getRootEntity().addAttributeToEntity("componente", "teste", "2") //TODO temos bug aqui!
     // Imprimir o documento
     println(doc.prettyPrint())
 

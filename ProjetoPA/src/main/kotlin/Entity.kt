@@ -5,6 +5,11 @@ class Entity {
     private val children : MutableList<Entity>
     private var parent : Entity?
 
+    fun accept(visitor: Visitor){
+        visitor.visit(this)
+        children.forEach{ it.accept(visitor)}
+    }
+
     fun getName(): String {
         return this.name
     }
@@ -25,14 +30,7 @@ class Entity {
         fun visit(entity: Entity)
     }
 
-    fun accept(visitor: (Entity) -> Boolean) {
-        if (visitor(this)) {
-            children.forEach { it.accept(visitor) }
-        }
-    }
-
-
-    constructor(name: String, attributes: MutableMap<String, String>, parent: Entity? = null ){
+    constructor(name: String, attributes: MutableMap<String, String> = mutableMapOf() , parent: Entity? = null ){
         this.name = name
         this.attributes = attributes
         this.children = mutableListOf()
@@ -51,12 +49,9 @@ class Entity {
         attributes[attributeName] = attributeValue
     }
 
+    fun removeAttribute(attribute : String) = attributes.remove(attribute)
 
-    fun removeAttribute(attribute : String) =
-        attributes.remove(attribute)
-
-    fun changeAttribute(attribute : String, value : String) =
-        attributes.replace(attribute, value)
+    fun changeAttribute(attribute : String, value : String) = attributes.replace(attribute, value)
 
     fun addChildEntity(entity: Entity) {
         children.add(entity)
@@ -98,35 +93,26 @@ class Entity {
         return stringBuilder
     }
 
-    class AttributePrinterVisitor : Visitor {
+
+    private fun visitor(visitor: (Entity) -> Unit) = object : Visitor {
         override fun visit(entity: Entity) {
-            println("Entity: ${entity.name}, Attributes: ${entity.attributes}")
+            visitor(entity)
         }
     }
 
-    class NamePrinterVisitor : Visitor {
-        override fun visit(entity: Entity) {
-            println("Entity Name: ${entity.name}")
-        }
-    }
+    fun attributePrinter() =
+        accept(visitor { println("Entity: $name, Attributes: $attributes") })
 
-    class AddAttributeToEntityVisitor(private val entityName: String, private val attributeName: String, private val attributeValue: String) : (Entity) -> Boolean {
-        override fun invoke(entity: Entity): Boolean {
-            if (entity.name == entityName)
+
+    fun namePrinter() =
+        accept(visitor { println("Entity Name: $name") })
+
+
+    fun addAttributeToEntity(entityName: String,  attributeName: String,  attributeValue: String){
+        val v = visitor { entity ->
+            if (entity.name == entityName && !entity.attributes.all {it.value.isBlank()})
                 entity.addAttribute(attributeName, attributeValue)
-            entity.children.forEach { it.accept(this) } // Recursively visits children entities
-            return true
         }
+        accept(v)
     }
-
-//    class AddAttributeToEntityVisitor(private val entityName: String, private val attributeName: String, private val attributeValue: String) : Visitor {
-//        override fun visit(entity: Entity) {
-//            if (entity.name == entityName) {
-//                entity.addAttribute(attributeName, attributeValue)
-//            }
-//            entity.children.forEach { it.accept(this) } // Recursively visits children entities
-//
-//        }
-//    }
-
 }
