@@ -41,7 +41,7 @@ class Entity(private var name: String, private var attributes: MutableMap<String
 
     private fun removeChildEntity(entity: Entity) {
         entity.setParent(null)
-//        children.remove(entity)
+        children.remove(entity)
     }
 
     private fun attributesAreBlank() =  attributes.all { it.value.isNullOrBlank() }
@@ -124,12 +124,23 @@ class Entity(private var name: String, private var attributes: MutableMap<String
         accept(v)
     }
 
-    fun globalRemoveEntity(entityName: String){
+//    fun globalRemoveEntity(entityName: String){
+//        val v = visitor { entity ->
+//            for (child in entity.children) {
+//                if(child.name == entityName)
+//                    entity.removeChildEntity(child)
+//            }
+//        }
+//        accept(v)
+//    }
+
+    fun globalRemoveEntity(entityName: String) {
         val v = visitor { entity ->
-            for (child in entity.children) {
-                if(child.name == entityName)
-                    entity.removeChildEntity(child)
-            }
+            val childrenToRemove = mutableListOf<Entity>() // Store children to remove
+            for (child in entity.children)
+                if (child.name == entityName)
+                    childrenToRemove.add(child)
+            childrenToRemove.forEach { entity.removeChildEntity(it) }
         }
         accept(v)
     }
