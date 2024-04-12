@@ -10,6 +10,10 @@ class Entity(private var name: String, private var attributes: MutableMap<String
 
     fun getParent(): Entity? = this.parent
 
+    fun getText() : String {
+        if(attributes.size == 1 && attributes.values.first() === "") return attributes.keys.first()
+        return "Doesn't have text!"
+    }
     private fun setName(name: String){
         this.name = name
     }
@@ -18,10 +22,7 @@ class Entity(private var name: String, private var attributes: MutableMap<String
         this.parent = parent
     }
 
-    fun getText() : String {
-        if(attributes.size == 1 && attributes.values.first() === "") return attributes.keys.first()
-        return "Doesn't have text!"
-    }
+
 
     fun addAttribute(attributeName: String, attributeValue: String?) = attributes.put(attributeName, attributeValue)
 
@@ -45,7 +46,6 @@ class Entity(private var name: String, private var attributes: MutableMap<String
     }
 
     private fun attributesAreBlank() =  attributes.all { it.value.isNullOrBlank() }
-
 
     override fun toString(): String {
         return "Name: $name, Attributes: $attributes, Parent: ${parent?.name ?: "null"}, Children: $children"
@@ -124,21 +124,11 @@ class Entity(private var name: String, private var attributes: MutableMap<String
         accept(v)
     }
 
-//    fun globalRemoveEntity(entityName: String){
-//        val v = visitor { entity ->
-//            for (child in entity.children) {
-//                if(child.name == entityName)
-//                    entity.removeChildEntity(child)
-//            }
-//        }
-//        accept(v)
-//    }
-
     fun globalRemoveEntity(entityName: String) {
         val v = visitor { entity ->
-            val childrenToRemove = mutableListOf<Entity>() // Store children to remove
+            val childrenToRemove = mutableListOf<Entity>()
             for (child in entity.children)
-                if (child.name == entityName)
+                if (child.name == entityName && this.name!= child.name)
                     childrenToRemove.add(child)
             childrenToRemove.forEach { entity.removeChildEntity(it) }
         }
