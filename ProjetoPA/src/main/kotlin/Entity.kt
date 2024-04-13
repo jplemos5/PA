@@ -107,7 +107,7 @@ class Entity(private var name: String, private var attributes: MutableMap<String
 
     fun globalAddAttributeToEntity(entityName: String,  attributeName: String,  attributeValue: String){
         val v = visitor { entity ->
-            if (entity.name == entityName && !attributesAreBlank())
+            if (entity.name == entityName && entity.attributes.none { it.value.isNullOrBlank() })
                 entity.addAttribute(attributeName, attributeValue)
         }
         accept(v)

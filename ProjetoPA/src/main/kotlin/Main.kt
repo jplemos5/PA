@@ -83,7 +83,7 @@ fun main(args: Array<String>) {
 
 
 
-    println("---------Teste Visitor-----------")
+//    println("---------Teste Visitor-----------")
 //    // Imprimir os atributos de todas as entidades
 //    val attributePrinterVisitor = Entity.AttributePrinterVisitor()
 //    doc.getEntities().forEach { it.accept(attributePrinterVisitor) }
@@ -103,7 +103,7 @@ fun main(args: Array<String>) {
     // Aplicar o Visitor à entidade desejada no documento
     //doc.getEntities().forEach { it.accept(addAttributeVisitor) }
 
-    doc.getRootEntity().globalAddAttributeToEntity("componente", "teste", "2")
+//    doc.getRootEntity().globalAddAttributeToEntity("componente", "teste", "2")
 //    doc.getRootEntity().renameEntity("plano", "teste")
 //    doc.getRootEntity().renameAttribute("componente", "nome", "Testttttt" )
 //    doc.getRootEntity().globalRemoveEntity("plano")

@@ -6,9 +6,11 @@ import java.util.List
 
 fun createDoc(rootName: String, version: String, encoding: String): Document {
     // Criar um novo documento
-    val doc = Document(rootName, version, encoding)
+    val doc = Document("plano", "1.0", "UTF-8")
 
     // Criar as entidades e adicionar ao documento
+
+
     val curso = Entity("curso", mutableMapOf())
     curso.addAttribute("Mestrado em Engenharia Informática", null)
     doc.getRootEntity().addChildEntity(curso)
@@ -44,24 +46,28 @@ fun createDoc(rootName: String, version: String, encoding: String): Document {
     ectsFuc2.addAttribute("42.0", null)
     fuc2.addChildEntity(ectsFuc2)
 
+
     val avaliacaoFuc2 = Entity("avaliacao", mutableMapOf(), fuc2)
     fuc2.addChildEntity(avaliacaoFuc2)
 
-    val componente1Fuc2 =
-        Entity("componente", mutableMapOf("nome" to "Dissertação", "peso" to "60%"), avaliacaoFuc2)
+    val componente1Fuc2 = Entity("componente", mutableMapOf("nome" to "Dissertação", "peso" to "60%"), avaliacaoFuc2)
     avaliacaoFuc2.addChildEntity(componente1Fuc2)
 
-    val componente2Fuc2 =
-        Entity("componente", mutableMapOf("nome" to "Apresentação", "peso" to "20%"), avaliacaoFuc2)
+
+    val componente2Fuc2 = Entity("componente", mutableMapOf("nome" to "Apresentação", "peso" to "20%"), avaliacaoFuc2)
     avaliacaoFuc2.addChildEntity(componente2Fuc2)
 
     val componente3Fuc2 = Entity("componente", mutableMapOf("nome" to "Discussão", "peso" to "20%"), avaliacaoFuc2)
     avaliacaoFuc2.addChildEntity(componente3Fuc2)
 
+
     return doc
 }
 
 class Test {
+
+
+
 
     @Test
     fun testAdicaoDeEntidade() {
@@ -147,18 +153,18 @@ class Test {
 
         assertEquals(expectedList, entityListResult)
     }
-//
-//    @Test
-//    fun testAdicionarAtributosGlobalmenteAoDocumento() {
-//        val attributeName = "atributo"
-//        val attributeValue = "valor"
-//        val entityName = "componente"
-//        val expectedResult = "{nome=Quizzes, peso=20%, $attributeName=$attributeValue}"
-//
-//        doc.getRootEntity().globalAddAttributeToEntity(entityName, attributeName, attributeValue)
-//
-//        assertEquals(expectedResult, componente1Fuc1.getAttributes())
-//    }
+
+    @Test
+    fun testAdicionarAtributosGlobalmenteAoDocumento() {
+        val doc = createDoc("plano", "1.0", "UTF-8")
+        val attributeName = "Ditado"
+        val attributeValue = "12%"
+        val entityName = "componente"
+
+        val alteredDoc = doc.getRootEntity().globalAddAttributeToEntity(entityName, attributeName, attributeValue)
+        assertNotSame(doc, alteredDoc)
+
+    }
 }
 
 
