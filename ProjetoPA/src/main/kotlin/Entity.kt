@@ -24,7 +24,7 @@ class Entity(private var name: String, private var attributes: MutableMap<String
 
     fun addAttribute(attributeName: String, attributeValue: String?) = attributes.put(attributeName, attributeValue)
 
-    private fun removeAttribute(attribute : String) = attributes.remove(attribute)
+    fun removeAttribute(attribute : String) = attributes.remove(attribute)
 
     fun changeAttribute(attribute : String, value : String) = attributes.replace(attribute, value)
 
@@ -38,7 +38,7 @@ class Entity(private var name: String, private var attributes: MutableMap<String
         entity.setParent(this)
     }
 
-    private fun removeChildEntity(entity: Entity) {
+    fun removeChildEntity(entity: Entity) {
         entity.setParent(null)
         children.remove(entity)
     }
@@ -95,6 +95,15 @@ class Entity(private var name: String, private var attributes: MutableMap<String
 
     fun namePrinter() =
         accept(visitor { println("Entity Name: $name") })
+
+    fun entityList(): MutableList<String> {
+        val resultList = mutableListOf<String>()
+        val v = visitor {
+                resultList.add(it.getName())
+            }
+        accept(v)
+        return resultList
+    }
 
     fun globalAddAttributeToEntity(entityName: String,  attributeName: String,  attributeValue: String){
         val v = visitor { entity ->

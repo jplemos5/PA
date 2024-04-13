@@ -103,16 +103,16 @@ fun main(args: Array<String>) {
     // Aplicar o Visitor à entidade desejada no documento
     //doc.getEntities().forEach { it.accept(addAttributeVisitor) }
 
-//    doc.getRootEntity().addAttributeToEntity("componente", "teste", "2")
+    doc.getRootEntity().globalAddAttributeToEntity("componente", "teste", "2")
 //    doc.getRootEntity().renameEntity("plano", "teste")
 //    doc.getRootEntity().renameAttribute("componente", "nome", "Testttttt" )
 //    doc.getRootEntity().globalRemoveEntity("plano")
 //    doc.getRootEntity().globalRemoveAttribute("componente", "peso")
     // Imprimir o documento
     println(doc.prettyPrint())
-    println(doc.getRootEntity().globalXPath("plano/curso"))
+//    println(doc.getRootEntity().globalXPath("plano/curso"))
     // Escrever o documento em um arquivo
-    doc.writeToFile("Teste1.xml")
+//    doc.writeToFile("Teste1.xml")
 
 
 }
