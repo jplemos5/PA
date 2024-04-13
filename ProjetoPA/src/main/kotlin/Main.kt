@@ -106,13 +106,14 @@ fun main(args: Array<String>) {
 //    doc.getRootEntity().addAttributeToEntity("componente", "teste", "2")
 //    doc.getRootEntity().renameEntity("plano", "teste")
 //    doc.getRootEntity().renameAttribute("componente", "nome", "Testttttt" )
-    doc.getRootEntity().globalRemoveEntity("plano")
+//    doc.getRootEntity().globalRemoveEntity("plano")
 //    doc.getRootEntity().globalRemoveAttribute("componente", "peso")
     // Imprimir o documento
     println(doc.prettyPrint())
-
+    println(doc.getRootEntity().globalXPath("plano/curso"))
     // Escrever o documento em um arquivo
     doc.writeToFile("Teste1.xml")
+
 
 }
 

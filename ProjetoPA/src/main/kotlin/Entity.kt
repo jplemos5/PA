@@ -22,11 +22,9 @@ class Entity(private var name: String, private var attributes: MutableMap<String
         this.parent = parent
     }
 
-
-
     fun addAttribute(attributeName: String, attributeValue: String?) = attributes.put(attributeName, attributeValue)
 
-    fun removeAttribute(attribute : String) = attributes.remove(attribute)
+    private fun removeAttribute(attribute : String) = attributes.remove(attribute)
 
     fun changeAttribute(attribute : String, value : String) = attributes.replace(attribute, value)
 
@@ -107,7 +105,7 @@ class Entity(private var name: String, private var attributes: MutableMap<String
     }
 
     fun globalRenameEntity(entityOldName: String,  entityNewName: String){
-        if(this.parent != null) { //TODO Perguntar ao stor se vale a pena ou n. E no adicionar Entidade?
+        if(this.parent != null && this.name != entityNewName) { //TODO Perguntar ao stor se vale a pena ou n. E no adicionar Entidade?
             val v = visitor { entity ->
                 if (entity.name == entityOldName)
                     entity.setName(entityNewName)
@@ -125,14 +123,16 @@ class Entity(private var name: String, private var attributes: MutableMap<String
     }
 
     fun globalRemoveEntity(entityName: String) {
-        val v = visitor { entity ->
-            val childrenToRemove = mutableListOf<Entity>()
-            for (child in entity.children)
-                if (child.name == entityName && this.name!= child.name)
-                    childrenToRemove.add(child)
-            childrenToRemove.forEach { entity.removeChildEntity(it) }
+        if (this.name != entityName) { //Nao pode remover a root
+            val v = visitor { entity ->
+                val childrenToRemove = mutableListOf<Entity>()
+                for (child in entity.children)
+                    if (child.name == entityName && this.name != child.name)
+                        childrenToRemove.add(child)
+                childrenToRemove.forEach { entity.removeChildEntity(it) }
+            }
+            accept(v)
         }
-        accept(v)
     }
 
     fun globalRemoveAttribute(entityName: String, attributeName : String){
@@ -141,5 +141,20 @@ class Entity(private var name: String, private var attributes: MutableMap<String
                 entity.removeAttribute(attributeName)
         }
         accept(v)
+    }
+
+    fun globalXPath(path: String) : String {
+        val listToSearch : MutableList<String> = path.split("/") as MutableList<String>
+        var str = ""
+        val v = visitor{ entity ->
+            if(listToSearch.size != 0 && entity.name == listToSearch[0]) {
+                if (listToSearch.size - 1 == 0)
+                    str += entity.prettyPrint() + "\n"
+                else
+                    listToSearch.removeAt(0)
+            }
+        }
+        accept(v)
+        return str
     }
 }
