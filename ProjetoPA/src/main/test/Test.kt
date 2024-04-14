@@ -1,12 +1,11 @@
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.io.File
-import java.util.List
 
 
 fun createDoc(rootName: String, version: String, encoding: String): Document {
     // Criar um novo documento
-    val doc = Document("plano", "1.0", "UTF-8")
+    val doc = Document(rootName, version, encoding)
 
     // Criar as entidades e adicionar ao documento
 
@@ -99,15 +98,15 @@ class Test {
 
         // Adicionar atributo
         fuc!!.addAttribute("novoAtributo", "valor")
-        assertEquals("valor", fuc!!.getAttributes()["novoAtributo"])
+        assertEquals("valor", fuc.getAttributes()["novoAtributo"])
 
         // Remover atributo
-        fuc!!.removeAttribute("codigo")
-        assertNull(fuc!!.getAttributes()["codigo"])
+        fuc.removeAttribute("codigo")
+        assertNull(fuc.getAttributes()["codigo"])
 
         // Alterar atributo
-        fuc!!.changeAttribute("novoAtributo", "novoValor")
-        assertEquals("novoValor", fuc!!.getAttributes()["novoAtributo"])
+        fuc.changeAttribute("novoAtributo", "novoValor")
+        assertEquals("novoValor", fuc.getAttributes()["novoAtributo"])
     }
 
     @Test
@@ -160,10 +159,61 @@ class Test {
         val attributeName = "Ditado"
         val attributeValue = "12%"
         val entityName = "componente"
+        val alteredDoc =  createDoc("plano", "1.0", "UTF-8")
+        alteredDoc.getRootEntity().globalAddAttributeToEntity(entityName, attributeName, attributeValue)
+        assertNotEquals(doc.getRootEntity().prettyPrint(), alteredDoc.getRootEntity().prettyPrint())
+    }
 
-        val alteredDoc = doc.getRootEntity().globalAddAttributeToEntity(entityName, attributeName, attributeValue)
-        assertNotSame(doc, alteredDoc)
+    @Test
+    fun testRenomearEntidadesGlobalmente(){
+        val doc = createDoc("plano", "1.0", "UTF-8")
+        val oldName = "componente"
+        val newName = "test"
+        val alteredDoc =  createDoc("plano", "1.0", "UTF-8")
+        alteredDoc.getRootEntity().globalRenameEntity(oldName, newName)
+        assertNotEquals(doc.getRootEntity().prettyPrint(), alteredDoc.getRootEntity().prettyPrint())
+    }
 
+    @Test
+    fun testRenomearAtributosGlobalmente(){
+        val doc = createDoc("plano", "1.0", "UTF-8")
+        val entityName = "componente"
+        val oldName = "nome"
+        val newName = "name"
+        val alteredDoc = createDoc("plano", "1.0", "UTF-8")
+        alteredDoc.getRootEntity().globalRenameAttribute(entityName, oldName, newName)
+        assertNotEquals(doc.getRootEntity().prettyPrint(), alteredDoc.getRootEntity().prettyPrint())
+    }
+
+    @Test
+    fun testRemoverEntidadesGlobalmente(){
+        val doc = createDoc("plano", "1.0", "UTF-8")
+        val entityName = "componente"
+        val alteredDoc = createDoc("plano", "1.0", "UTF-8")
+        alteredDoc.getRootEntity().globalRemoveEntity(entityName)
+        assertNotEquals(doc.getRootEntity().prettyPrint(), alteredDoc.getRootEntity().prettyPrint())
+    }
+
+    @Test
+    fun testRemoverAtributosGlobalmente(){
+        val doc = createDoc("plano", "1.0", "UTF-8")
+        val entityName = "componente"
+        val attributeName = "peso"
+        val alteredDoc = createDoc("plano", "1.0", "UTF-8")
+        alteredDoc.getRootEntity().globalRemoveAttribute(entityName, attributeName)
+        assertNotEquals(doc.getRootEntity().prettyPrint(), alteredDoc.getRootEntity().prettyPrint())
+    }
+
+    @Test
+    fun testXPathGlobalmente(){
+        val original = "<componente nome=\"Quizzes\" peso=\"20%\"/>\n" +
+                "<componente nome=\"Projeto\" peso=\"80%\"/>\n" +
+                "<componente nome=\"Dissertação\" peso=\"60%\"/>\n" +
+                "<componente nome=\"Apresentação\" peso=\"20%\"/>\n" +
+                "<componente nome=\"Discussão\" peso=\"20%\"/>"
+        val path = "fuc/avaliacao/componente"
+        val xPath = createDoc("plano", "1.0", "UTF-8").getRootEntity().globalXPath(path)
+        assertEquals(original,xPath)
     }
 }
 

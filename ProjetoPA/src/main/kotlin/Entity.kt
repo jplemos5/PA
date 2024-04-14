@@ -114,9 +114,9 @@ class Entity(private var name: String, private var attributes: MutableMap<String
     }
 
     fun globalRenameEntity(entityOldName: String,  entityNewName: String){
-        if(this.parent != null && this.name != entityNewName) { //TODO Perguntar ao stor se vale a pena ou n. E no adicionar Entidade?
+        if(this.name != entityNewName) { //TODO Perguntar ao stor se vale a pena ou n. E no adicionar Entidade?
             val v = visitor { entity ->
-                if (entity.name == entityOldName)
+                if (entity.parent != null && entity.name == entityOldName)
                     entity.setName(entityNewName)
             }
             accept(v)
@@ -164,6 +164,6 @@ class Entity(private var name: String, private var attributes: MutableMap<String
             }
         }
         accept(v)
-        return str
+        return str.substring(0, str.length - 1)
     }
 }

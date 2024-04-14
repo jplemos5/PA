@@ -104,9 +104,9 @@ fun main(args: Array<String>) {
     //doc.getEntities().forEach { it.accept(addAttributeVisitor) }
 
 //    doc.getRootEntity().globalAddAttributeToEntity("componente", "teste", "2")
-//    doc.getRootEntity().renameEntity("plano", "teste")
-//    doc.getRootEntity().renameAttribute("componente", "nome", "Testttttt" )
-//    doc.getRootEntity().globalRemoveEntity("plano")
+//    doc.getRootEntity().globalRenameEntity("nome", "TESSSSSSSSSSSSSSSSSSS")
+//    doc.getRootEntity().globalRenameAttribute("componente", "nome", "Testttttt" )
+//    doc.getRootEntity().globalRemoveEntity("ects")
 //    doc.getRootEntity().globalRemoveAttribute("componente", "peso")
     // Imprimir o documento
     println(doc.prettyPrint())
