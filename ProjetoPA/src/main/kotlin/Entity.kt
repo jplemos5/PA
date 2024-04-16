@@ -37,7 +37,8 @@ class Entity(private var name: String, private var attributes: MutableMap<String
 
     /**
      * Gets the text content of the entity.
-     * If the entity has only one attribute which is an empty string, returns the attribute name.
+     * If the entity has only one attribute, and its value is an empty string, return the attribute name.
+     * Example: <nome>Programação Avançada</nome>
      * Otherwise, returns "Doesn't have text!".
      * @return The text content of the entity.
      */
