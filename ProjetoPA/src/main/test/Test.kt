@@ -11,18 +11,18 @@ fun createDoc(rootName: String, version: String, encoding: String): Document {
 
 
     val curso = Entity("curso", mutableMapOf())
-    curso.addAttribute("Mestrado em Engenharia Informática", null)
+    curso.addText("Mestrado em Engenharia Informática")
     doc.getRootEntity().addChildEntity(curso)
 
     val fuc1 = Entity("fuc", mutableMapOf("codigo" to "M4310"))
     doc.getRootEntity().addChildEntity(fuc1)
 
     val nomeFuc1 = Entity("nome", mutableMapOf(), fuc1)
-    nomeFuc1.addAttribute("Programação Avançada", null)
+    nomeFuc1.addText("Programação Avançada")
     fuc1.addChildEntity(nomeFuc1)
 
     val ectsFuc1 = Entity("ects", mutableMapOf(), fuc1)
-    ectsFuc1.addAttribute("6.0", null)
+    ectsFuc1.addText("6.0")
     fuc1.addChildEntity(ectsFuc1)
 
     val avaliacaoFuc1 = Entity("avaliacao", mutableMapOf(), fuc1)
@@ -42,7 +42,7 @@ fun createDoc(rootName: String, version: String, encoding: String): Document {
     fuc2.addChildEntity(nomeFuc2)
 
     val ectsFuc2 = Entity("ects", mutableMapOf(), fuc2)
-    ectsFuc2.addAttribute("42.0", null)
+    ectsFuc2.addText("42.0")
     fuc2.addChildEntity(ectsFuc2)
 
 
@@ -204,17 +204,17 @@ class Test {
         assertNotEquals(doc.getRootEntity().prettyPrint(), alteredDoc.getRootEntity().prettyPrint())
     }
 
-    @Test
-    fun testXPathGlobalmente(){
-        val original = "<componente nome=\"Quizzes\" peso=\"20%\"/>\n" +
-                "<componente nome=\"Projeto\" peso=\"80%\"/>\n" +
-                "<componente nome=\"Dissertação\" peso=\"60%\"/>\n" +
-                "<componente nome=\"Apresentação\" peso=\"20%\"/>\n" +
-                "<componente nome=\"Discussão\" peso=\"20%\"/>"
-        val path = "fuc/avaliacao/componente"
-        val xPath = createDoc("plano", "1.0", "UTF-8").getRootEntity().globalXPath(path)
-        assertEquals(original,xPath)
-    }
+@Test
+fun testPrintXPathGlobalmente(){
+    val original = "<componente nome=\"Quizzes\" peso=\"20%\"/>\n" +
+            "<componente nome=\"Projeto\" peso=\"80%\"/>\n" +
+            "<componente nome=\"Dissertação\" peso=\"60%\"/>\n" +
+            "<componente nome=\"Apresentação\" peso=\"20%\"/>\n" +
+            "<componente nome=\"Discussão\" peso=\"20%\"/>"
+    val path = "fuc/avaliacao/componente"
+    val xPath = createDoc("plano", "1.0", "UTF-8").getRootEntity().globalPrintXPath(path)
+    assertEquals(original,xPath)
+}
 }
 
 

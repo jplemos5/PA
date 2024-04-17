@@ -7,7 +7,7 @@
  * @property parent The parent entity of the current entity, or null if it has no parent.
  * @property children The list of child entities of the current entity.
  */
-class Entity(private var name: String, private var attributes: MutableMap<String, String?> = mutableMapOf() , private var parent: Entity? = null ) {
+class Entity(private var name: String, private var attributes: MutableMap<String?, String> = mutableMapOf() , private var parent: Entity? = null ) {
 
     private var children: MutableList<Entity> = mutableListOf()
 
@@ -21,7 +21,7 @@ class Entity(private var name: String, private var attributes: MutableMap<String
      * Gets the attributes of the entity.
      * @return The attributes of the entity as a mutable map.
      */
-    fun getAttributes(): MutableMap<String, String?> = this.attributes
+    fun getAttributes(): MutableMap<String?, String> = this.attributes
 
     /**
      * Gets the children of the entity.
@@ -43,7 +43,7 @@ class Entity(private var name: String, private var attributes: MutableMap<String
      * @return The text content of the entity.
      */
     fun getText() : String {
-        if(attributes.size == 1 && attributes.values.first() === "") return attributes.keys.first()
+        if(attributes.size == 1 && attributes.keys.first() === "") return attributes.values.first()
         return "Doesn't have text!"
     }
 
@@ -69,7 +69,17 @@ class Entity(private var name: String, private var attributes: MutableMap<String
      * @param attributeValue The value of the attribute to add.
      * @return The previous value associated with [attributeName], or null if there was no mapping for [attributeName].
      */
-    fun addAttribute(attributeName: String, attributeValue: String?) = attributes.put(attributeName, attributeValue)
+    fun addAttribute(attributeName: String, attributeValue: String) {
+        if(isValidAttributeName(attributeName))
+            attributes[attributeName] = attributeValue
+    }
+
+    fun addText(attributeValue: String){
+        if(attributesAreBlank())
+            attributes[null] = attributeValue
+    }
+
+    private fun isValidAttributeName(attributeName: String) = attributeName.split(" ").size == 1 && attributeName != ""
 
     /**
      * Removes the attribute with the specified name from the entity.
@@ -93,9 +103,12 @@ class Entity(private var name: String, private var attributes: MutableMap<String
      * @param oldName The current name of the attribute.
      * @param newName The new name to set for the attribute.
      */
-    private fun changeAttributeName(oldName : String, newName : String){
-        val value = attributes.remove(oldName)// TODO saber se vale a pena tentar manter a ordem
-        addAttribute(newName, value)
+    private fun renameAttribute(oldName : String, newName : String){
+        if(isValidAttributeName(newName)){
+            val value = attributes.remove(oldName)// TODO saber se vale a pena tentar manter a ordem
+            if (value != null)
+                addAttribute(newName, value)
+        }
     }
 
     /**
@@ -120,7 +133,7 @@ class Entity(private var name: String, private var attributes: MutableMap<String
      * Checks if all attributes in the entity are blank or null.
      * @return true if all attributes are blank or null, false otherwise.
      */
-    private fun attributesAreBlank() : Boolean =  attributes.all { it.value.isNullOrBlank() }
+    private fun attributesAreBlank() : Boolean =  attributes.all { it.key.isNullOrBlank() }
 
     /**
      * Returns a string representation of the entity.
@@ -184,7 +197,7 @@ class Entity(private var name: String, private var attributes: MutableMap<String
      */
     private fun placeAttributes(stringBuilder: StringBuilder) : StringBuilder {
         if (attributes.isNotEmpty()) {
-            attributes.forEach { (key, value) -> stringBuilder.append(if (value.isNullOrBlank()) key else " $key=\"$value\"") }
+            attributes.forEach { (key, value) -> stringBuilder.append(if (key.isNullOrBlank()) key else " $key=\"$value\"") }
             stringBuilder.append( if(children.isNotEmpty()) ">" else "")
         }
         return stringBuilder
@@ -236,7 +249,7 @@ class Entity(private var name: String, private var attributes: MutableMap<String
      */
     fun globalAddAttributeToEntity(entityName: String,  attributeName: String,  attributeValue: String){
         val v = visitor { entity ->
-            if (entity.name == entityName && entity.attributes.none { it.value.isNullOrBlank() })
+            if (entity.name == entityName && entity.attributes.none { it.key.isNullOrBlank() })
                 entity.addAttribute(attributeName, attributeValue)
         }
         accept(v)
@@ -248,13 +261,11 @@ class Entity(private var name: String, private var attributes: MutableMap<String
      * @param entityNewName The new name for the entity.
      */
     fun globalRenameEntity(entityOldName: String,  entityNewName: String){
-        if(this.name != entityNewName) { //TODO Perguntar ao stor se vale a pena ou n. E no adicionar Entidade?
-            val v = visitor { entity ->
-                if (entity.parent != null && entity.name == entityOldName)
-                    entity.setName(entityNewName)
-            }
-            accept(v)
+       val v = visitor { entity ->
+            if (entity.parent != null && entity.name == entityOldName)
+                entity.setName(entityNewName)
         }
+        accept(v)
     }
 
     /**
@@ -266,17 +277,17 @@ class Entity(private var name: String, private var attributes: MutableMap<String
     fun globalRenameAttribute(entityName: String,  attributeOldName: String,  attributeNewName: String){
         val v = visitor { entity ->
             if (entity.name == entityName && entity.attributes.contains(attributeOldName))
-                entity.changeAttributeName(attributeOldName, attributeNewName)
+                entity.renameAttribute(attributeOldName, attributeNewName)
         }
         accept(v)
     }
 
     /**
-     * Removes all entities with the specified name from the hierarchy except for the root entity.
+     * Can remove an entity with the specified name from the hierarchy except for the root entity.
      * @param entityName The name of the entities to remove.
      */
     fun globalRemoveEntity(entityName: String) {
-        if (this.name != entityName) { //Nao pode remover a root
+        if (this.name != entityName) {
             val v = visitor { entity ->
                 val childrenToRemove = mutableListOf<Entity>()
                 for (child in entity.children)
@@ -306,7 +317,7 @@ class Entity(private var name: String, private var attributes: MutableMap<String
      * @param path The XPath expression to search for.
      * @return A string containing the XML representation of entities matching the XPath expression.
      */
-    fun globalXPath(path: String) : String {
+    fun globalPrintXPath(path: String) : String {
         val listToSearch : MutableList<String> = path.split("/") as MutableList<String>
         var str = ""
         val v = visitor{ entity ->
@@ -320,4 +331,22 @@ class Entity(private var name: String, private var attributes: MutableMap<String
         accept(v)
         return str.substring(0, str.length - 1)
     }
+
+    fun globalXPath(path: String) : MutableList<Entity> {
+        val listToSearch : MutableList<String> = path.split("/") as MutableList<String>
+        val list = mutableListOf<Entity>()
+        val v = visitor{ entity ->
+            if(listToSearch.size != 0 && entity.name == listToSearch[0]) {
+                if (listToSearch.size - 1 == 0)
+                    list.add(entity)
+                else
+                    listToSearch.removeAt(0)
+            }
+        }
+        accept(v)
+        return list
+    }
+
+
+
 }

@@ -30,18 +30,18 @@ fun main(args: Array<String>) {
 
 
     val curso = Entity("curso", mutableMapOf())
-    curso.addAttribute("Mestrado em Engenharia Informática", null)
+    curso.addText("Mestrado em Engenharia Informática")
     doc.getRootEntity().addChildEntity(curso)
 
     val fuc1 = Entity("fuc", mutableMapOf("codigo" to "M4310"))
     doc.getRootEntity().addChildEntity(fuc1)
 
     val nomeFuc1 = Entity("nome", mutableMapOf(), fuc1)
-    nomeFuc1.addAttribute("Programação Avançada", null)
+    nomeFuc1.addText("Programação Avançada")
     fuc1.addChildEntity(nomeFuc1)
 
     val ectsFuc1 = Entity("ects", mutableMapOf(), fuc1)
-    ectsFuc1.addAttribute("6.0", null)
+    ectsFuc1.addText("6.0")
     fuc1.addChildEntity(ectsFuc1)
 
     val avaliacaoFuc1 = Entity("avaliacao", mutableMapOf(), fuc1)
@@ -61,7 +61,7 @@ fun main(args: Array<String>) {
     fuc2.addChildEntity(nomeFuc2)
 
     val ectsFuc2 = Entity("ects", mutableMapOf(), fuc2)
-    ectsFuc2.addAttribute("42.0", null)
+    ectsFuc2.addText("42.0")
     fuc2.addChildEntity(ectsFuc2)
 
 
