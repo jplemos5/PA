@@ -7,7 +7,7 @@
  * @property parent The parent entity of the current entity, or null if it has no parent.
  * @property children The list of child entities of the current entity.
  */
-class Entity(private var name: String, private var attributes: MutableMap<String?, String> = mutableMapOf() , private var parent: Entity? = null ) {
+class Entity(private var name: String, private var attributes: LinkedHashMap<String?, String> = linkedMapOf() , private var parent: Entity? = null ) {
 
     private var children: MutableList<Entity> = mutableListOf()
 
@@ -70,7 +70,7 @@ class Entity(private var name: String, private var attributes: MutableMap<String
      * @return The previous value associated with [attributeName], or null if there was no mapping for [attributeName].
      */
     fun addAttribute(attributeName: String, attributeValue: String) {
-        if(isValidAttributeName(attributeName))
+        if(isValidAttributeName(attributeName) && attributeValue != "")
             attributes[attributeName] = attributeValue
     }
 
@@ -103,13 +103,34 @@ class Entity(private var name: String, private var attributes: MutableMap<String
      * @param oldName The current name of the attribute.
      * @param newName The new name to set for the attribute.
      */
-    private fun renameAttribute(oldName : String, newName : String){
-        if(isValidAttributeName(newName)){
-            val value = attributes.remove(oldName)// TODO saber se vale a pena tentar manter a ordem
-            if (value != null)
-                addAttribute(newName, value)
+//    private fun renameAttribute(oldName : String, newName : String){
+//        if(isValidAttributeName(newName)){
+//            val value = attributes.remove(oldName)// TODO saber se vale a pena tentar manter a ordem
+//            if (value != null)
+//                addAttribute(newName, value)
+//        }
+//    }
+
+    private fun renameAttribute(oldName: String?, newName: String) {
+        if (isValidAttributeName(newName) && oldName != null && attributes.containsKey(oldName)) {
+            val newAttributes = LinkedHashMap<String?, String>()
+            for ((key, value) in attributes) {
+                if (key == oldName) {
+                    newAttributes[newName] = value
+                } else {
+                    newAttributes[key] = value
+                }
+            }
+            attributes.clear()
+            attributes.putAll(newAttributes)
         }
     }
+
+
+
+
+
+
 
     /**
      * Adds a child entity to the current entity.
@@ -197,7 +218,7 @@ class Entity(private var name: String, private var attributes: MutableMap<String
      */
     private fun placeAttributes(stringBuilder: StringBuilder) : StringBuilder {
         if (attributes.isNotEmpty()) {
-            attributes.forEach { (key, value) -> stringBuilder.append(if (key.isNullOrBlank()) key else " $key=\"$value\"") }
+            attributes.forEach { (key, value) -> stringBuilder.append(if (key.isNullOrBlank()) value else " $key=\"$value\"") }
             stringBuilder.append( if(children.isNotEmpty()) ">" else "")
         }
         return stringBuilder

@@ -10,53 +10,53 @@ fun createDoc(rootName: String, version: String, encoding: String): Document {
     // Criar as entidades e adicionar ao documento
 
 
-    val curso = Entity("curso", mutableMapOf())
+    val curso = Entity("curso", linkedMapOf())
     curso.addText("Mestrado em Engenharia Informática")
     doc.getRootEntity().addChildEntity(curso)
 
-    val fuc1 = Entity("fuc", mutableMapOf("codigo" to "M4310"))
+    val fuc1 = Entity("fuc", linkedMapOf("codigo" to "M4310"))
     doc.getRootEntity().addChildEntity(fuc1)
 
-    val nomeFuc1 = Entity("nome", mutableMapOf(), fuc1)
+    val nomeFuc1 = Entity("nome", linkedMapOf(), fuc1)
     nomeFuc1.addText("Programação Avançada")
     fuc1.addChildEntity(nomeFuc1)
 
-    val ectsFuc1 = Entity("ects", mutableMapOf(), fuc1)
+    val ectsFuc1 = Entity("ects", linkedMapOf(), fuc1)
     ectsFuc1.addText("6.0")
     fuc1.addChildEntity(ectsFuc1)
 
-    val avaliacaoFuc1 = Entity("avaliacao", mutableMapOf(), fuc1)
+    val avaliacaoFuc1 = Entity("avaliacao", linkedMapOf(), fuc1)
     fuc1.addChildEntity(avaliacaoFuc1)
 
-    val componente1Fuc1 = Entity("componente", mutableMapOf("nome" to "Quizzes", "peso" to "20%"), avaliacaoFuc1)
+    val componente1Fuc1 = Entity("componente", linkedMapOf("nome" to "Quizzes", "peso" to "20%"), avaliacaoFuc1)
     avaliacaoFuc1.addChildEntity(componente1Fuc1)
 
-    val componente2Fuc1 = Entity("componente", mutableMapOf("nome" to "Projeto", "peso" to "80%"), avaliacaoFuc1)
+    val componente2Fuc1 = Entity("componente", linkedMapOf("nome" to "Projeto", "peso" to "80%"), avaliacaoFuc1)
     avaliacaoFuc1.addChildEntity(componente2Fuc1)
 
-    val fuc2 = Entity("fuc", mutableMapOf("codigo" to "03782"))
+    val fuc2 = Entity("fuc", linkedMapOf("codigo" to "03782"))
     doc.getRootEntity().addChildEntity(fuc2)
 
-    val nomeFuc2 = Entity("nome", mutableMapOf(), fuc2)
+    val nomeFuc2 = Entity("nome", linkedMapOf(), fuc2)
     nomeFuc2.addAttribute("Dissertação", "")
     fuc2.addChildEntity(nomeFuc2)
 
-    val ectsFuc2 = Entity("ects", mutableMapOf(), fuc2)
+    val ectsFuc2 = Entity("ects", linkedMapOf(), fuc2)
     ectsFuc2.addText("42.0")
     fuc2.addChildEntity(ectsFuc2)
 
 
-    val avaliacaoFuc2 = Entity("avaliacao", mutableMapOf(), fuc2)
+    val avaliacaoFuc2 = Entity("avaliacao", linkedMapOf(), fuc2)
     fuc2.addChildEntity(avaliacaoFuc2)
 
-    val componente1Fuc2 = Entity("componente", mutableMapOf("nome" to "Dissertação", "peso" to "60%"), avaliacaoFuc2)
+    val componente1Fuc2 = Entity("componente", linkedMapOf("nome" to "Dissertação", "peso" to "60%"), avaliacaoFuc2)
     avaliacaoFuc2.addChildEntity(componente1Fuc2)
 
 
-    val componente2Fuc2 = Entity("componente", mutableMapOf("nome" to "Apresentação", "peso" to "20%"), avaliacaoFuc2)
+    val componente2Fuc2 = Entity("componente", linkedMapOf("nome" to "Apresentação", "peso" to "20%"), avaliacaoFuc2)
     avaliacaoFuc2.addChildEntity(componente2Fuc2)
 
-    val componente3Fuc2 = Entity("componente", mutableMapOf("nome" to "Discussão", "peso" to "20%"), avaliacaoFuc2)
+    val componente3Fuc2 = Entity("componente", linkedMapOf("nome" to "Discussão", "peso" to "20%"), avaliacaoFuc2)
     avaliacaoFuc2.addChildEntity(componente3Fuc2)
 
 
@@ -71,7 +71,7 @@ class Test {
     @Test
     fun testAdicaoDeEntidade() {
         val doc = createDoc("plano", "1.0", "UTF-8")
-        val novaEntidade = Entity("novaEntidade", mutableMapOf())
+        val novaEntidade = Entity("novaEntidade", linkedMapOf())
         doc.getRootEntity().addChildEntity(novaEntidade)
         assertTrue(doc.getRootEntity().getChildren().contains(novaEntidade))
     }
@@ -117,8 +117,8 @@ class Test {
         assertEquals(doc.getRootEntity(), fuc!!.getParent())
 
         // Adicionar entidades filhas a fuc1
-        val nomeFuc1 = Entity("nome", mutableMapOf(), fuc)
-        val ectsFuc1 = Entity("ects", mutableMapOf(), fuc)
+        val nomeFuc1 = Entity("nome", linkedMapOf(), fuc)
+        val ectsFuc1 = Entity("ects", linkedMapOf(), fuc)
         fuc.addChildEntity(nomeFuc1)
         fuc.addChildEntity(ectsFuc1)
 
