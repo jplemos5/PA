@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plano>
-    <curso>Mestrado em Engenharia Informática</curso>
+    <curso>null</curso>
     <fuc codigo="M4310">
-        <nome>Programação Avançada</nome>
-        <ects>6.0</ects>
+        <nome>null</nome>
+        <ects>null</ects>
         <avaliacao>
             <componente nome="Quizzes" peso="20%"/>
             <componente nome="Projeto" peso="80%"/>
         </avaliacao>
     </fuc>
     <fuc codigo="03782">
-        <nome>Dissertação</nome>
-        <ects>42.0</ects>
+        <nome Dissertação=""/>
+        <ects>null</ects>
         <avaliacao>
             <componente nome="Dissertação" peso="60%"/>
             <componente nome="Apresentação" peso="20%"/>
