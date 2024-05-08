@@ -1,5 +1,6 @@
 import java.io.File
 import java.lang.StringBuilder
+import kotlin.reflect.KClass
 
 /**
  * Represents an XML document with a root entity, version, and encoding.

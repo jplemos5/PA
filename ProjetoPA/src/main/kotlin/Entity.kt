@@ -1,3 +1,5 @@
+import kotlin.reflect.KClass
+
 /**
  * Represents an entity with a name, attributes, parent, and children.
  *
@@ -103,14 +105,6 @@ class Entity(private var name: String, private var attributes: LinkedHashMap<Str
      * @param oldName The current name of the attribute.
      * @param newName The new name to set for the attribute.
      */
-//    private fun renameAttribute(oldName : String, newName : String){
-//        if(isValidAttributeName(newName)){
-//            val value = attributes.remove(oldName)// TODO saber se vale a pena tentar manter a ordem
-//            if (value != null)
-//                addAttribute(newName, value)
-//        }
-//    }
-
     private fun renameAttribute(oldName: String?, newName: String) {
         if (isValidAttributeName(newName) && oldName != null && attributes.containsKey(oldName)) {
             val newAttributes = LinkedHashMap<String?, String>()
@@ -125,12 +119,6 @@ class Entity(private var name: String, private var attributes: LinkedHashMap<Str
             attributes.putAll(newAttributes)
         }
     }
-
-
-
-
-
-
 
     /**
      * Adds a child entity to the current entity.
@@ -370,4 +358,19 @@ class Entity(private var name: String, private var attributes: LinkedHashMap<Str
 
 
 
+    //Usar anotações para alterar nome da entidade
+    //Usar anotações para definir se devemos colocar os atributos na parte de cima ou em baixo como entity
+    //Usar anotações para excluir atributos que não nos interessam representar
+
+
+
+
 }
+
+annotation class EntityName(val name:String)
+
+@EntityName ("componente")
+class ComponenteAvaliacao(val nome: String, val peso: Int)
+
+@EntityName ("fuc")
+class FUC( val codigo: String, val nome: String, val ects: Double, val observacoes: String, val avaliacao: List<ComponenteAvaliacao> )

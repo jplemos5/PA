@@ -115,6 +115,10 @@ fun main(args: Array<String>) {
     // Escrever o documento em um arquivo
 //    doc.writeToFile("Teste1.xml")
 
-
+    val componente = ComponenteAvaliacao( "nome", 5)
+    val fuc = FUC( "M2332", "Programação Avançada",  6.0, "lalalala", mutableListOf(componente) )
+    val c = XMLClasses()
+    println(c.translate(componente).prettyPrint())
+    println(c.translate(fuc).prettyPrint())
 }
 
