@@ -116,9 +116,13 @@ fun main(args: Array<String>) {
 //    doc.writeToFile("Teste1.xml")
 
     val componente = ComponenteAvaliacao( "nome", 5)
-    val fuc = FUC( "M2332", "Programação Avançada",  6.0, "lalalala", mutableListOf(componente) )
+    val componente1 = ComponenteAvaliacao( "teste", 100000)
+    val fuc = FUC( "M2332", "Programação Avançada",  6.0, "lalalala", mutableListOf(componente,componente1) )
     val c = XMLClasses()
     println(c.translate(componente).prettyPrint())
     println(c.translate(fuc).prettyPrint())
+    val en = c.translate(fuc)
+    en.globalRemoveEntity("ects")
+    println(en.prettyPrint())
 }
 
