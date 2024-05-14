@@ -26,3 +26,7 @@ class XMLClasses {
     //if(obj::class.hasAnnotation<EntityName>())
     //return Entity(obj::class.findAnnotation<EntityName>()?.name!!, lMap)
 }
+/* Como atribuir nome da entidade com anotação, tendo em conta que temos diferentes entidades com diferentes nomes?
+* Tendo em conta a nossa classe entity, como generalizar mais?
+* Como definir uma classe base?
+* */
