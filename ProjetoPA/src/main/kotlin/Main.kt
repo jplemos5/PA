@@ -115,6 +115,26 @@ fun main(args: Array<String>) {
     // Escrever o documento em um arquivo
 //    doc.writeToFile("Teste1.xml")
 
+
+
+    @XmlEntity ("componente")
+    data class ComponenteAvaliacao(
+        @XmlAttribute("name") @InlineAttribute
+        val nome: String,
+        @XmlAttribute("weight") @InlineAttribute @Exclude
+        val peso: Int)
+
+    @XmlEntity ("fuc")
+    data class FUC(
+        @XmlAttribute("code") @InlineAttribute
+        val codigo: String,
+        @XmlAttribute("name")
+        val nome: String,
+        val ects: Double,
+        @Exclude
+        val observacoes: String,
+        val avaliacao: List<ComponenteAvaliacao>)
+
     val componente = ComponenteAvaliacao( "nome", 5)
     val componente1 = ComponenteAvaliacao( "teste", 100000)
     val fuc = FUC( "M2332", "Programação Avançada",  6.0, "lalalala", mutableListOf(componente,componente1) )

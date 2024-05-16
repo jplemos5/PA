@@ -1,3 +1,4 @@
+import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
@@ -5,28 +6,39 @@ import kotlin.reflect.full.hasAnnotation
 class XMLClasses {
 
     fun translate (obj: Any): Entity{
-        val e = Entity(obj::class.simpleName!!)
-        obj::class.declaredMemberProperties.forEach {
-            val ent = Entity(it.name)
-            if(it.call(obj) is List<*>) { //TODO onde se vão adicionar os filhos
-                for (att in it.call(obj) as List<*>)
-                    ent.addChildEntity(translate(att!!))
-                e.addChildEntity(ent)
-            }
-            else if(obj is ComponenteAvaliacao || (obj is FUC && it.name == "codigo")) //TODO onde se vão adicionar os atributos na mesma linha
-                e.addAttribute(it.name, it.call(obj).toString())
-            else  { //TODO onde se adiciona os atributos com text
-                ent.addText(it.call(obj).toString())
-                e.addChildEntity(ent)
-            }
+        val e = getEntityName(obj)
+        obj::class.declaredMemberProperties.forEach { property ->
+            if(!property.hasAnnotation<Exclude>())
+                handleProperties(obj,property, e)
         }
         return e
     }
 
-    //if(obj::class.hasAnnotation<EntityName>())
-    //return Entity(obj::class.findAnnotation<EntityName>()?.name!!, lMap)
+
+    private fun getXmlAttributeName(obj:KProperty<*>): String{
+        if(obj.hasAnnotation<XmlAttribute>())
+            return obj.findAnnotation<XmlAttribute>()!!.name
+        return obj.name
+    }
+
+    private fun getEntityName(obj:Any): Entity{
+        if(obj::class.hasAnnotation<XmlEntity>())
+            return Entity(obj::class.findAnnotation<XmlEntity>()!!.name)
+        return Entity(obj::class.simpleName!!)
+    }
+
+    private fun handleProperties(obj:Any, property:KProperty<*>, father: Entity){
+        val ent = Entity(getXmlAttributeName(property))
+        if(property.call(obj) is List<*>) { //Onde se vão adicionar os filhos
+            for (att in property.call(obj) as List<*>)
+                ent.addChildEntity(translate(att!!))
+            father.addChildEntity(ent)
+        }
+        else if(property.hasAnnotation<InlineAttribute>()) //Onde se adicionam os atributos na mesma linha
+            father.addAttribute(getXmlAttributeName(property), property.call(obj).toString())
+        else { //Onde se adiciona os atributos com text
+            ent.addText(property.call(obj).toString())
+            father.addChildEntity(ent)
+        }
+    }
 }
-/* Como atribuir nome da entidade com anotação, tendo em conta que temos diferentes entidades com diferentes nomes?
-* Tendo em conta a nossa classe entity, como generalizar mais?
-* Como definir uma classe base?
-* */
