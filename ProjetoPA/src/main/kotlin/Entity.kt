@@ -1,3 +1,5 @@
+import kotlin.reflect.KClass
+
 /**
  * Represents an entity with a name, attributes, parent, and children.
  *
@@ -358,11 +360,21 @@ class Entity(private var name: String, private var attributes: LinkedHashMap<Str
 @Target(AnnotationTarget.CLASS)
 annotation class XmlEntity(val name:String)
 @Target(AnnotationTarget.PROPERTY)
-annotation class XmlAttribute(val name: String)
+annotation class XmlAttributeName(val name: String)
 @Target(AnnotationTarget.PROPERTY)
 annotation class InlineAttribute
 @Target(AnnotationTarget.PROPERTY)
 annotation class Exclude
+@Target(AnnotationTarget.PROPERTY)
+annotation class XmlValueTransformer(val transformer: KClass<out Transformer>)
+@Target(AnnotationTarget.PROPERTY, AnnotationTarget.CLASS)
+annotation class XmlAdapter(val adapter: KClass<out Adapter>)
 
-//Usar anotações para definir se devemos colocar os atributos na parte de cima ou em baixo como entity
 
+interface Transformer {
+    fun transform(input: String): String
+}
+
+interface Adapter {
+    fun adapt(input: Entity): Entity
+}

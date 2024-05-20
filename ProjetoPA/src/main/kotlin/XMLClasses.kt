@@ -1,23 +1,26 @@
-import kotlin.reflect.KProperty
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.*
+import kotlin.reflect.full.*
 
 class XMLClasses {
 
     fun translate (obj: Any): Entity{
         val e = getEntityName(obj)
-        obj::class.declaredMemberProperties.forEach { property ->
-            if(!property.hasAnnotation<Exclude>())
-                handleProperties(obj,property, e)
+            obj::class.dataClassFields.forEach { property ->
+                if(!property.hasAnnotation<Exclude>())
+                    handleProperties(obj,property, e)
+            }
+        if(obj::class.hasAnnotation<XmlAdapter>()){
+            val annotation = obj::class.findAnnotation<XmlAdapter>()
+            val adapter : Adapter = (annotation?.adapter?.createInstance() as Adapter)
+            return  adapter.adapt(e)
         }
         return e
     }
 
 
     private fun getXmlAttributeName(obj:KProperty<*>): String{
-        if(obj.hasAnnotation<XmlAttribute>())
-            return obj.findAnnotation<XmlAttribute>()!!.name
+        if(obj.hasAnnotation<XmlAttributeName>())
+            return obj.findAnnotation<XmlAttributeName>()!!.name
         return obj.name
     }
 
@@ -28,17 +31,35 @@ class XMLClasses {
     }
 
     private fun handleProperties(obj:Any, property:KProperty<*>, father: Entity){
-        val ent = Entity(getXmlAttributeName(property))
-        if(property.call(obj) is List<*>) { //Onde se vão adicionar os filhos
+        val currentEntity = Entity(getXmlAttributeName(property))
+        val attributeValue: String = getAttributeValue(obj, property) // Obter o valor final do atributo
+        if(property.call(obj) is List<*>) { // Onde se vão adicionar os filhos
             for (att in property.call(obj) as List<*>)
-                ent.addChildEntity(translate(att!!))
-            father.addChildEntity(ent)
+                currentEntity.addChildEntity(translate(att!!))
+            father.addChildEntity(currentEntity)
         }
-        else if(property.hasAnnotation<InlineAttribute>()) //Onde se adicionam os atributos na mesma linha
-            father.addAttribute(getXmlAttributeName(property), property.call(obj).toString())
+        else if(property.hasAnnotation<InlineAttribute>()) // Onde se adicionam os atributos na mesma linha
+            father.addAttribute(getXmlAttributeName(property), attributeValue)
         else { //Onde se adiciona os atributos com text
-            ent.addText(property.call(obj).toString())
-            father.addChildEntity(ent)
+            currentEntity.addText(attributeValue)
+            father.addChildEntity(currentEntity)
         }
     }
+
+    private fun getAttributeValue(obj:Any, property: KProperty<*>): String {
+        if (property.hasAnnotation<XmlValueTransformer>()) {
+            val annotation = property.findAnnotation<XmlValueTransformer>()
+            val transformer : Transformer = (annotation?.transformer?.createInstance() as Transformer)
+            return transformer.transform(property.call(obj).toString())
+        } else
+            return  property.call(obj).toString()
+    }
+
+    private val KClass<*>.dataClassFields: List<KProperty<*>>
+        get() {
+            require(isData) { "instance must be data class" }
+            return primaryConstructor!!.parameters.map { p ->
+                declaredMemberProperties.find { it.name == p.name }!!
+            }
+        }
 }

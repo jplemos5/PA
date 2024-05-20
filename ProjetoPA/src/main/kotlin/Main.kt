@@ -1,3 +1,4 @@
+
 fun main(args: Array<String>) {
 //    val doc = Document()
 //    val local = Entity("local", mutableMapOf())
@@ -70,7 +71,6 @@ fun main(args: Array<String>) {
 
     val componente1Fuc2 = Entity("componente", linkedMapOf("nome" to "Dissertação", "peso" to "60%"), avaliacaoFuc2)
     avaliacaoFuc2.addChildEntity(componente1Fuc2)
-    println(avaliacaoFuc2.getText())
 
     val componente2Fuc2 = Entity("componente", linkedMapOf("nome" to "Apresentação", "peso" to "20%", "testte" to "20%", "testeeee" to "20%"), avaliacaoFuc2)
     avaliacaoFuc2.addChildEntity(componente2Fuc2)
@@ -103,37 +103,62 @@ fun main(args: Array<String>) {
     // Aplicar o Visitor à entidade desejada no documento
     //doc.getEntities().forEach { it.accept(addAttributeVisitor) }
 
-    doc.getRootEntity().globalAddAttributeToEntity("componente", "teste", "2")
-    doc.getRootEntity().globalRenameEntity("nome", "TESSSSSSSSSSSSSSSSSSS")
-    doc.getRootEntity().globalRenameAttribute("componente", "nome", "Testttttt" )
-    doc.getRootEntity().globalRenameAttribute("componente", "testte", "Testt" )
-    doc.getRootEntity().globalRemoveEntity("ects")
-    doc.getRootEntity().globalRemoveAttribute("componente", "peso")
-    // Imprimir o documento
-    println(doc.prettyPrint())
+//    doc.getRootEntity().globalAddAttributeToEntity("componente", "teste", "2")
+//    doc.getRootEntity().globalRenameEntity("nome", "TESSSSSSSSSSSSSSSSSSS")
+//    doc.getRootEntity().globalRenameAttribute("componente", "nome", "Testttttt" )
+//    doc.getRootEntity().globalRenameAttribute("componente", "testte", "Testt" )
+//    doc.getRootEntity().globalRemoveEntity("ects")
+//    doc.getRootEntity().globalRemoveAttribute("componente", "peso")
+//    // Imprimir o documento
+//    println(doc.prettyPrint())
+
 //    println(doc.getRootEntity().globalXPath("plano/curso"))
     // Escrever o documento em um arquivo
 //    doc.writeToFile("Teste1.xml")
 
+    class AddPercentage : Transformer {
+        override fun transform(input: String): String = "$input%"
+    }
+
+    class AddParenthesis : Transformer {
+        override fun transform(input: String): String = "($input)"
+    }
+
+    class ChangeAttribute : Adapter {
+        override fun adapt(input: Entity): Entity {
+            input.changeAttribute("code", "M!@!@#!#")
+            return input
+        }
+    }
+
+    class ChangeEntityName : Adapter {
+        override fun adapt(input: Entity): Entity {
+            input.globalRenameEntity("avaliacao", "TESTTTTTTTTT")
+            return input
+        }
+    }
 
 
-    @XmlEntity ("componente")
+    @XmlEntity ("component")
     data class ComponenteAvaliacao(
-        @XmlAttribute("name") @InlineAttribute
+        @XmlAttributeName("name") @InlineAttribute @XmlValueTransformer(AddParenthesis::class)
         val nome: String,
-        @XmlAttribute("weight") @InlineAttribute @Exclude
+        @XmlAttributeName("weight") @InlineAttribute @XmlValueTransformer(AddPercentage::class)
         val peso: Int)
 
+    @XmlAdapter(ChangeEntityName::class)
     @XmlEntity ("fuc")
     data class FUC(
-        @XmlAttribute("code") @InlineAttribute
+        @XmlAttributeName("code") @InlineAttribute
         val codigo: String,
-        @XmlAttribute("name")
+        @XmlAttributeName("name")
         val nome: String,
         val ects: Double,
         @Exclude
         val observacoes: String,
         val avaliacao: List<ComponenteAvaliacao>)
+
+
 
     val componente = ComponenteAvaliacao( "nome", 5)
     val componente1 = ComponenteAvaliacao( "teste", 100000)
