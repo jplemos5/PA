@@ -164,10 +164,48 @@ fun main(args: Array<String>) {
     val componente1 = ComponenteAvaliacao( "teste", 100000)
     val fuc = FUC( "M2332", "Programação Avançada",  6.0, "lalalala", mutableListOf(componente,componente1) )
     val c = XMLClasses()
-    println(c.translate(componente).prettyPrint())
-    println(c.translate(fuc).prettyPrint())
+    //println(c.translate(componente).prettyPrint())
+    //println(c.translate(fuc).prettyPrint())
     val en = c.translate(fuc)
     en.globalRemoveEntity("ects")
-    println(en.prettyPrint())
+    //println(en.prettyPrint())
+
+
+    val fuc3 = Entity("Fuc")
+    val componente3 = Entity("componente")
+    val ects3 = Entity("ects", linkedMapOf())
+    val test3 = Entity("test", linkedMapOf())
+    ects3.addText("10")
+    test3.addText("Hello")
+
+    fuc3 fatherOf listOf(componente3, ects3)
+    println(fuc3.prettyPrint())
+
+    println(fuc3 / "componente")
+
+
+    componente3 fatherOf test3
+
+    linkedMapOf("nome" to "Dissertação", "peso" to "60%") insideAttributesOf componente3
+    linkedMapOf("nome1" to "Dissertação", "peso1" to "60%") inlineAttributesOf componente3
+
+    println((fuc3 / "componente") ["nome"])
+    println(fuc3 / "componente" / "test")
+
+    println("nome" in componente3)
+
+    val entity = entity("artists") {
+        childEntity("beatles", linkedMapOf("nome" to "Dissertação", "peso" to "60%")) {
+            childEntity("help", linkedMapOf("nome" to "Apresentação", "peso" to "20%", "testte" to "20%", "testeeee" to "20%")) {
+                attribute("name", "Gonçalo")
+                childEntity("texto", linkedMapOf()){
+                    text("Texto bonito")
+                }
+            }
+            attribute("name", "João")
+        }
+    }
+
+    println(entity.prettyPrint())
 }
 
