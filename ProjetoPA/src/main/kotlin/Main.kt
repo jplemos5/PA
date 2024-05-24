@@ -141,15 +141,15 @@ fun main(args: Array<String>) {
 
     @XmlEntity ("component")
     data class ComponenteAvaliacao(
-        @XmlAttributeName("name") @InlineAttribute @XmlValueTransformer(AddParenthesis::class)
+        @XmlAttributeName("name") @DescriptionAttribute @XmlValueTransformer(AddParenthesis::class)
         val nome: String,
-        @XmlAttributeName("weight") @InlineAttribute @XmlValueTransformer(AddPercentage::class)
+        @XmlAttributeName("weight") @DescriptionAttribute @XmlValueTransformer(AddPercentage::class)
         val peso: Int)
 
     @XmlAdapter(ChangeEntityName::class)
     @XmlEntity ("fuc")
     data class FUC(
-        @XmlAttributeName("code") @InlineAttribute
+        @XmlAttributeName("code") @DescriptionAttribute
         val codigo: String,
         @XmlAttributeName("name")
         val nome: String,
@@ -163,10 +163,9 @@ fun main(args: Array<String>) {
     val componente = ComponenteAvaliacao( "nome", 5)
     val componente1 = ComponenteAvaliacao( "teste", 100000)
     val fuc = FUC( "M2332", "Programação Avançada",  6.0, "lalalala", mutableListOf(componente,componente1) )
-    val c = XMLClasses()
     //println(c.translate(componente).prettyPrint())
     //println(c.translate(fuc).prettyPrint())
-    val en = c.translate(fuc)
+    val en = translate(fuc)
     en.globalRemoveEntity("ects")
     //println(en.prettyPrint())
 

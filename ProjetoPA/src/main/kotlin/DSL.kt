@@ -15,13 +15,13 @@ infix fun Entity.fatherOf(entityList:Collection<Entity>) =
     entityList.forEach { addChildEntity(it) }
 
 
-infix fun LinkedHashMap<String,String>.inlineAttributesOf(ent : Entity) : Unit{
+infix fun LinkedHashMap<String,String>.inlineAttributesOf(ent : Entity){
     this.forEach{(name, value) ->
         ent.addAttribute(name, value)
     }
 }
 
-infix fun LinkedHashMap<String,String>.insideAttributesOf(ent : Entity) : Unit{
+infix fun LinkedHashMap<String,String>.insideAttributesOf(ent : Entity){
     this.forEach{(name, value) ->
         val child = Entity(name)
         child.addText(value)

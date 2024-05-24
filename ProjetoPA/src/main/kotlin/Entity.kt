@@ -1,5 +1,3 @@
-import kotlin.reflect.KClass
-
 /**
  * Represents an entity with a name, attributes, parent, and children.
  *
@@ -66,27 +64,52 @@ class Entity(private var name: String, private var attributes: LinkedHashMap<Str
     }
 
     /**
+     * Adds a child entity to the current entity.
+     * @param entity The entity to add as a child.
+     */
+    fun addChildEntity(entity: Entity) {
+        children.add(entity)
+        entity.setParent(this)
+    }
+
+    /**
+     * Removes a child entity from the current entity.
+     * @param entity The entity to remove from the children.
+     */
+    fun removeChildEntity(entity: Entity) {
+        entity.setParent(null)
+        children.remove(entity)
+    }
+
+    /**
      * Adds an attribute to the entity.
      * @param attributeName The name of the attribute to add.
      * @param attributeValue The value of the attribute to add.
-     * @return The previous value associated with [attributeName], or null if there was no mapping for [attributeName].
      */
     fun addAttribute(attributeName: String, attributeValue: String) {
         if(isValidAttributeName(attributeName) && attributeValue != "")
             attributes[attributeName] = attributeValue
     }
 
+    /**
+     * Adds a text to the entity.
+     * @param attributeValue The value of the attribute to add.
+     */
     fun addText(attributeValue: String){
         if(attributesAreBlank())
             attributes[null] = attributeValue
     }
 
+    /**
+     * Checks if an attribute name is valid.
+     * @param attributeName The name of the attribute to add.
+     * @return A boolean that means if the specified name is valid.
+     */
     private fun isValidAttributeName(attributeName: String) = attributeName.split(" ").size == 1 && attributeName != ""
 
     /**
      * Removes the attribute with the specified name from the entity.
      * @param attribute The name of the attribute to remove.
-     * @return The previous value associated with [attribute], or null if there was no mapping for [attribute].
      */
     fun removeAttribute(attribute : String) = attributes.remove(attribute)
 
@@ -95,7 +118,6 @@ class Entity(private var name: String, private var attributes: LinkedHashMap<Str
      * If the attribute doesn't exist, it does nothing.
      * @param attribute The name of the attribute to change.
      * @param value The new value of the attribute.
-     * @return The previous value associated with [attribute], or null if there was no mapping for [attribute].
      */
     fun changeAttribute(attribute : String, value : String) = attributes.replace(attribute, value)
 
@@ -118,24 +140,6 @@ class Entity(private var name: String, private var attributes: LinkedHashMap<Str
             attributes.clear()
             attributes.putAll(newAttributes)
         }
-    }
-
-    /**
-     * Adds a child entity to the current entity.
-     * @param entity The entity to add as a child.
-     */
-    fun addChildEntity(entity: Entity) {
-        children.add(entity)
-        entity.setParent(this)
-    }
-
-    /**
-     * Removes a child entity from the current entity.
-     * @param entity The entity to remove from the children.
-     */
-    fun removeChildEntity(entity: Entity) {
-        entity.setParent(null)
-        children.remove(entity)
     }
 
     /**
@@ -226,18 +230,6 @@ class Entity(private var name: String, private var attributes: LinkedHashMap<Str
         }
         return stringBuilder
     }
-
-    /**
-     * Prints the name and attributes of the entity and its children.
-     */
-    fun attributePrinter() =
-        accept(visitor { println("Entity: $name, Attributes: $attributes") })
-
-    /**
-     * Prints the name of the entity and its children.
-     */
-    fun namePrinter() =
-        accept(visitor { println("Entity Name: $name") })
 
     /**
      * Retrieves a list of names of all entities in the hierarchy.
@@ -341,6 +333,11 @@ class Entity(private var name: String, private var attributes: LinkedHashMap<Str
         return str.substring(0, str.length - 1)
     }
 
+    /**
+     * Performs a global XPath search on the hierarchy and returns a list with the matching entities.
+     * @param path The XPath expression to search for.
+     * @return A list with the matching entities.
+     */
     fun globalXPath(path: String) : MutableList<Entity> {
         val listToSearch : MutableList<String> = path.split("/") as MutableList<String>
         val list = mutableListOf<Entity>()
