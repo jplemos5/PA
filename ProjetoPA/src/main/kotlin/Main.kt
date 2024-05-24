@@ -141,15 +141,15 @@ fun main(args: Array<String>) {
 
     @XmlEntity ("component")
     data class ComponenteAvaliacao(
-        @XmlAttributeName("name") @DescriptionAttribute @XmlValueTransformer(AddParenthesis::class)
+        @XmlAttributeName("name") @InlineAttribute @XmlValueTransformer(AddParenthesis::class)
         val nome: String,
-        @XmlAttributeName("weight") @DescriptionAttribute @XmlValueTransformer(AddPercentage::class)
+        @XmlAttributeName("weight") @InlineAttribute @XmlValueTransformer(AddPercentage::class)
         val peso: Int)
 
     @XmlAdapter(ChangeEntityName::class)
     @XmlEntity ("fuc")
     data class FUC(
-        @XmlAttributeName("code") @DescriptionAttribute
+        @XmlAttributeName("code") @InlineAttribute
         val codigo: String,
         @XmlAttributeName("name")
         val nome: String,
@@ -196,12 +196,12 @@ fun main(args: Array<String>) {
     val entity = entity("artists") {
         childEntity("beatles", linkedMapOf("nome" to "Dissertação", "peso" to "60%")) {
             childEntity("help", linkedMapOf("nome" to "Apresentação", "peso" to "20%", "testte" to "20%", "testeeee" to "20%")) {
-                attribute("name", "Gonçalo")
+                attributeName("name", "Gonçalo")
                 childEntity("texto", linkedMapOf()){
                     text("Texto bonito")
                 }
             }
-            attribute("name", "João")
+            attributeName("name", "João")
         }
     }
 

@@ -6,8 +6,16 @@
  * @property attributes The attributes of the entity as a mutable map.
  * @property parent The parent entity of the current entity, or null if it has no parent.
  * @property children The list of child entities of the current entity.
+ * @throws IllegalArgumentException if the entity name or any attribute name is not valid.
  */
 class Entity(private var name: String, private var attributes: LinkedHashMap<String?, String> = linkedMapOf() , private var parent: Entity? = null ) {
+
+    init {
+        require(isValidEntityName(name)) { "Invalid entity name: $name" }
+        attributes.keys.forEach { attributeName ->
+            require(isValidAttributeName(attributeName ?: "")) { "Invalid attribute name: $attributeName" }
+        }
+    }
 
     private var children: MutableList<Entity> = mutableListOf()
 
@@ -52,7 +60,10 @@ class Entity(private var name: String, private var attributes: LinkedHashMap<Str
      * @param name The new name for the entity.
      */
     private fun setName(name: String){
-        this.name = name
+        if(isValidEntityName(name))
+            this.name = name
+        else
+            throw IllegalArgumentException("Entity name is not valid")
     }
 
     /**
@@ -100,12 +111,7 @@ class Entity(private var name: String, private var attributes: LinkedHashMap<Str
             attributes[null] = attributeValue
     }
 
-    /**
-     * Checks if an attribute name is valid.
-     * @param attributeName The name of the attribute to add.
-     * @return A boolean that means if the specified name is valid.
-     */
-    private fun isValidAttributeName(attributeName: String) = attributeName.split(" ").size == 1 && attributeName != ""
+
 
     /**
      * Removes the attribute with the specified name from the entity.
@@ -116,10 +122,10 @@ class Entity(private var name: String, private var attributes: LinkedHashMap<Str
     /**
      * Changes the value of an existing attribute in the entity.
      * If the attribute doesn't exist, it does nothing.
-     * @param attribute The name of the attribute to change.
+     * @param attributeName The name of the attribute to change.
      * @param value The new value of the attribute.
      */
-    fun changeAttribute(attribute : String, value : String) = attributes.replace(attribute, value)
+    fun changeAttribute(attributeName: String, value : String) = attributes.replace(attributeName, value)
 
     /**
      * Changes the name of an existing attribute in the entity.
@@ -139,6 +145,8 @@ class Entity(private var name: String, private var attributes: LinkedHashMap<Str
             }
             attributes.clear()
             attributes.putAll(newAttributes)
+        }else{
+            throw IllegalArgumentException("Attribute name is not valid or attribute with oldName doesn't exist")
         }
     }
 

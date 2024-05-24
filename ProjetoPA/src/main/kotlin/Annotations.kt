@@ -3,6 +3,7 @@ import kotlin.reflect.KClass
 /**
  * Annotation to mark a class as an XML entity with a specific name.
  * @property name The XML tag name for the annotated class.
+ * @throws IllegalArgumentException if the provided name is empty, contains invalid characters or doesn't comply with the XML name standards
  */
 @Target(AnnotationTarget.CLASS)
 annotation class XmlEntity(val name: String)
@@ -10,6 +11,7 @@ annotation class XmlEntity(val name: String)
 /**
  * Annotation to specify the XML attribute name for a property.
  * @property name The XML attribute name for the annotated property.
+ * @throws IllegalArgumentException if the provided name is empty, contains invalid characters or doesn't comply with the XML Standards.
  */
 @Target(AnnotationTarget.PROPERTY)
 annotation class XmlAttributeName(val name: String)
@@ -17,9 +19,10 @@ annotation class XmlAttributeName(val name: String)
 /**
  * Annotation to mark a property as a description attribute in the XML, which means it will not be nested but next to the name of the Xml Entity.
  * No parameters needed, simply marks the property to be serialized in same line has the name of the entity.
+ * Ex: <fuc codigo="03782">
  */
 @Target(AnnotationTarget.PROPERTY)
-annotation class DescriptionAttribute
+annotation class InlineAttribute
 
 /**
  * Annotation to exclude a property from being serialized to XML.
@@ -51,6 +54,7 @@ interface Transformer {
      * Transforms the input string value.
      * @param input The string value to be transformed.
      * @return The transformed string.
+     * @throws IllegalArgumentException if the input is invalid or transformation fails.
      */
     fun transform(input: String): String
 }
@@ -64,6 +68,7 @@ interface Adapter {
      * Adapts the input entity.
      * @param input The entity to be adapted.
      * @return The adapted entity.
+     * @throws IllegalArgumentException if the input entity is invalid or adaptation fails.
      */
     fun adapt(input: Entity): Entity
 }

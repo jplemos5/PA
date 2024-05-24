@@ -1,4 +1,4 @@
-import java.io.File
+import java.io.*
 import java.lang.StringBuilder
 
 /**
@@ -7,9 +7,16 @@ import java.lang.StringBuilder
  * @property version The version of the document.
  * @property encoding The encoding of the document.
  * @property entity The Root Entity of the document.
+ * @throws IllegalArgumentException if the version or encoding is invalid.
  */
 class Document(name: String, private var version: String, private var encoding: String) {
-    // Root entity of the document
+
+    init {
+        require(version.matches(Regex("""\d+(\.\d+)*"""))) { "Invalid XML version format" }
+        require(encoding.isNotEmpty()) { "Encoding cannot be empty" }
+    }
+
+
     private val entity: Entity = Entity(name)
 
     /**
@@ -27,14 +34,22 @@ class Document(name: String, private var version: String, private var encoding: 
     /**
      * Sets the version of the document.
      * @param version The new version for the document.
+     * @throws IllegalArgumentException if the version is invalid.
      */
-    fun setVersion(version: String) { this.version = version }
+    fun setVersion(version: String) {
+        require(version.matches(Regex("""\d+(\.\d+)*"""))) { "Invalid XML version format" }
+        this.version = version
+    }
 
     /**
      * Sets the encoding of the document.
      * @param encoding The new encoding for the document.
+     * @throws IllegalArgumentException if the encoding is empty.
      */
-    fun setEncoding(encoding: String) { this.encoding = encoding }
+    fun setEncoding(encoding: String) {
+        require(encoding.isNotEmpty()) { "Encoding cannot be empty" }
+        this.encoding = encoding
+    }
 
     /**
      * Gets the root entity of the document.
@@ -51,7 +66,15 @@ class Document(name: String, private var version: String, private var encoding: 
     /**
      * Writes the document content to a file with the specified filename.
      * @param fileName The name of the file to write to.
+     * @throws IOException if an I/O error occurs while writing to the file.
      */
-    fun writeToFile(fileName: String) = File(fileName).writeText(prettyPrint())
+    @Throws(IOException::class)
+    fun writeToFile(fileName: String) {
+        try {
+            File(fileName).writeText(prettyPrint())
+        } catch (e: IOException) {
+            throw IOException("Failed to write to file: $fileName", e)
+        }
+    }
 
 }
