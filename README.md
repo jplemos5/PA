@@ -1,6 +1,6 @@
 # XML Manipulation API
 
-This project provides a set of Kotlin classes and functions to manipulate XML documents. Each class is designed to help the users acheiving a specific XML function, from document creation and manipulation to validation and file I/O operations.
+This project provides a set of Kotlin classes and functions to manipulate XML documents. Each class is designed to help the users achieving a specific XML task, from document creation and manipulation to validation and I/O file operations.
 
 ## Table of Contents
 
@@ -29,7 +29,7 @@ This documentation will provide an overview of each file, describe the functions
    - Functions: Adding and removing attributes, adding and removing child entities, pretty-printing and some global functions.
    
 3. **XMLClasses.kt**
-   - A file that contains some functions that can help with creating xml classes, it is related to `Annotations`.
+   - A file that contains some functions that can help creating xml classes, it is related to `Annotations`.
    - Functions: Function that translates a class to an entity and some additional helping functions.
    
 4. **Annotations.kt**
