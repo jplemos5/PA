@@ -63,9 +63,9 @@ fun createDoc(rootName: String, version: String, encoding: String): Document {
     return doc
 }
 
+
+
 class Test {
-
-
 
 
     @Test
@@ -156,26 +156,54 @@ class Test {
     @Test
     fun testAdicionarAtributosGlobalmenteAoDocumento() {
         val doc = createDoc("plano", "1.0", "UTF-8")
-        println(doc.prettyPrint())
         val attributeName = "Ditado"
         val attributeValue = "12%"
-        val entityName = "fuc"
+        val entityName = "componente"
         val alteredDoc = createDoc("plano", "1.0", "UTF-8")
         alteredDoc.getRootEntity().globalAddAttributeToEntity(entityName, attributeName, attributeValue)
-        val alteredDocAttributeValue =
-            alteredDoc.getRootEntity().getChildren().find { it.getName() == entityName }?.getAttributes()
-                ?.getValue(attributeName)
-        assertEquals(alteredDocAttributeValue, attributeValue)
+        val foundEntities = mutableListOf<Entity>()
+        val visitor = object : Entity.Visitor {
+            override fun visit(entity: Entity) {
+                if (entity.getName() == entityName) {
+                    foundEntities.add(entity)
+                }
+            }
+        }
+        alteredDoc.getRootEntity().accept(visitor)
+        foundEntities.forEach {
+            val attribute = it.getAttributes()[attributeName]
+            assertEquals(attributeValue, attribute)
+        }
     }
 
     @Test
     fun testRenomearEntidadesGlobalmente(){
         val doc = createDoc("plano", "1.0", "UTF-8")
-        val oldName = "componente"
+        val oldName = "fuc"
         val newName = "test"
         val alteredDoc =  createDoc("plano", "1.0", "UTF-8")
         alteredDoc.getRootEntity().globalRenameEntity(oldName, newName)
-        assertNotEquals(doc.getRootEntity().prettyPrint(), alteredDoc.getRootEntity().prettyPrint())
+        val foundOldEntity = mutableListOf<Entity>()
+        val visitorOldName = object : Entity.Visitor {
+            override fun visit(entity: Entity) {
+                if (entity.getName() == oldName) {
+                    foundOldEntity.add(entity)
+                }
+            }
+        }
+        alteredDoc.getRootEntity().accept(visitorOldName)
+        val foundNewEntity = mutableListOf<Entity>()
+        val visitorNewName = object : Entity.Visitor {
+            override fun visit(entity: Entity) {
+                if (entity.getName() == newName) {
+                    foundNewEntity.add(entity)
+                }
+            }
+        }
+        alteredDoc.getRootEntity().accept(visitorNewName)
+        assertEquals(foundOldEntity.size, 0)
+        assertTrue(foundNewEntity.size > 0)
+
     }
 
     @Test
@@ -186,7 +214,18 @@ class Test {
         val newName = "name"
         val alteredDoc = createDoc("plano", "1.0", "UTF-8")
         alteredDoc.getRootEntity().globalRenameAttribute(entityName, oldName, newName)
-        assertNotEquals(doc.getRootEntity().prettyPrint(), alteredDoc.getRootEntity().prettyPrint())
+        val foundEntities = mutableListOf<Entity>()
+        val visitor = object : Entity.Visitor {
+            override fun visit(entity: Entity) {
+                if (entity.getName() == entityName) {
+                    foundEntities.add(entity)
+                }
+            }
+        }
+        alteredDoc.getRootEntity().accept(visitor)
+        foundEntities.forEach {
+            assertTrue(it.getAttributes().contains(newName))
+        }
     }
 
     @Test
@@ -195,7 +234,16 @@ class Test {
         val entityName = "componente"
         val alteredDoc = createDoc("plano", "1.0", "UTF-8")
         alteredDoc.getRootEntity().globalRemoveEntity(entityName)
-        assertNotEquals(doc.getRootEntity().prettyPrint(), alteredDoc.getRootEntity().prettyPrint())
+        val foundEntities = mutableListOf<Entity>()
+        val visitor = object : Entity.Visitor {
+            override fun visit(entity: Entity) {
+                if (entity.getName() == entityName) {
+                    foundEntities.add(entity)
+                }
+            }
+        }
+        alteredDoc.getRootEntity().accept(visitor)
+        assertTrue(foundEntities.size == 0)
     }
 
     @Test
@@ -205,20 +253,56 @@ class Test {
         val attributeName = "peso"
         val alteredDoc = createDoc("plano", "1.0", "UTF-8")
         alteredDoc.getRootEntity().globalRemoveAttribute(entityName, attributeName)
-        assertNotEquals(doc.getRootEntity().prettyPrint(), alteredDoc.getRootEntity().prettyPrint())
+        val foundEntities = mutableListOf<Entity>()
+        val visitor = object : Entity.Visitor {
+            override fun visit(entity: Entity) {
+                if (entity.getName() == entityName) {
+                    foundEntities.add(entity)
+                }
+            }
+        }
+        alteredDoc.getRootEntity().accept(visitor)
+        foundEntities.forEach {
+            assertFalse(it.getAttributes().contains(attributeName))
+        }
     }
 
-@Test
-fun testPrintXPathGlobalmente(){
-    val original = "<componente nome=\"Quizzes\" peso=\"20%\"/>\n" +
-            "<componente nome=\"Projeto\" peso=\"80%\"/>\n" +
-            "<componente nome=\"Dissertação\" peso=\"60%\"/>\n" +
-            "<componente nome=\"Apresentação\" peso=\"20%\"/>\n" +
-            "<componente nome=\"Discussão\" peso=\"20%\"/>"
-    val path = "fuc/avaliacao/componente"
-    val xPath = createDoc("plano", "1.0", "UTF-8").getRootEntity().globalPrintXPath(path)
-    assertEquals(original,xPath)
-}
+    @Test
+    fun testPrintXPathGlobalmente(){
+        val original = "<componente nome=\"Quizzes\" peso=\"20%\"/>\n" +
+                "<componente nome=\"Projeto\" peso=\"80%\"/>\n" +
+                "<componente nome=\"Dissertação\" peso=\"60%\"/>\n" +
+                "<componente nome=\"Apresentação\" peso=\"20%\"/>\n" +
+                "<componente nome=\"Discussão\" peso=\"20%\"/>"
+        val path = "fuc/avaliacao/componente"
+        val xPath = createDoc("plano", "1.0", "UTF-8").getRootEntity().globalPrintXPath(path)
+        assertEquals(original,xPath)
+    }
+
+    class AddPercentage : Transformer {
+        override fun transform(input: String): String = "$input%"
+    }
+
+    class AddParenthesis : Transformer {
+        override fun transform(input: String): String = "($input)"
+    }
+
+    class ChangeAttribute : Adapter {
+        override fun adapt(input: Entity): Entity {
+            input.changeAttribute("code", "M!@!@#!#")
+            return input
+        }
+    }
+
+    class ChangeEntityName : Adapter {
+        override fun adapt(input: Entity): Entity {
+            input.globalRenameEntity("avaliacao", "TESTTTTTTTTT")
+            return input
+        }
+    }
+
+
+
 }
 
 

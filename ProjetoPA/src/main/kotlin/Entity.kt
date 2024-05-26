@@ -191,7 +191,7 @@ class Entity(private var name: String, private var attributes: LinkedHashMap<Str
      * Accepts a visitor and visits the current entity and its children.
      * @param visitor The visitor to accept.
      */
-    private fun accept(visitor: Visitor){
+    fun accept(visitor: Visitor){
         visitor.visit(this)
         children.forEach{ it.accept(visitor)}
     }
