@@ -156,12 +156,16 @@ class Test {
     @Test
     fun testAdicionarAtributosGlobalmenteAoDocumento() {
         val doc = createDoc("plano", "1.0", "UTF-8")
+        println(doc.prettyPrint())
         val attributeName = "Ditado"
         val attributeValue = "12%"
-        val entityName = "componente"
-        val alteredDoc =  createDoc("plano", "1.0", "UTF-8")
+        val entityName = "fuc"
+        val alteredDoc = createDoc("plano", "1.0", "UTF-8")
         alteredDoc.getRootEntity().globalAddAttributeToEntity(entityName, attributeName, attributeValue)
-        assertNotEquals(doc.getRootEntity().prettyPrint(), alteredDoc.getRootEntity().prettyPrint())
+        val alteredDocAttributeValue =
+            alteredDoc.getRootEntity().getChildren().find { it.getName() == entityName }?.getAttributes()
+                ?.getValue(attributeName)
+        assertEquals(alteredDocAttributeValue, attributeValue)
     }
 
     @Test

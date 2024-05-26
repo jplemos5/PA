@@ -188,12 +188,16 @@ fun main(args: Array<String>) {
     linkedMapOf("nome" to "Dissertação", "peso" to "60%") insideAttributesOf componente3
     linkedMapOf("nome1" to "Dissertação", "peso1" to "60%") inlineAttributesOf componente3
 
-    println((fuc3 / "componente") ["nome"])
+
     println(fuc3 / "componente" / "test")
 
-    println("nome" in componente3)
+    println("nome" isChildOf componente3)
+    println(null isAttributeOf ects3)
 
-    val entity = entity("artists") {
+
+
+
+    val documentDSL  = document("artists","1.0", "UTF-8") {
         childEntity("beatles", linkedMapOf("nome" to "Dissertação", "peso" to "60%")) {
             childEntity("help", linkedMapOf("nome" to "Apresentação", "peso" to "20%", "testte" to "20%", "testeeee" to "20%")) {
                 attributeName("name", "Gonçalo")
@@ -201,10 +205,9 @@ fun main(args: Array<String>) {
                     text("Texto bonito")
                 }
             }
-            attributeName("name", "João")
         }
     }
 
-    println(entity.prettyPrint())
+    println(documentDSL.prettyPrint())
 }
 

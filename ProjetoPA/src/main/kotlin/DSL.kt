@@ -17,18 +17,29 @@ operator fun Entity.div(entityName: String) : Entity =
  * @return The value of the attribute as a [String].
  * @throws NoSuchElementException If the attribute does not exist.
  */
-operator fun Entity.get(attributeName: String): String =
+operator fun Entity.get(attributeName: String?): String =
     this.getAttributes()[attributeName]?.toString()
         ?: throw NoSuchElementException("Attribute '$attributeName' not found")
 
 /**
- * Checks if an entity contains a specific entity as a child.
+ * Checks if the current string represents the name of a child entity within a given entity.
  *
- * @param entityName The name of the entity to check.
- * @return `true` if the entity contains the entity, `false` otherwise.
+ * @receiver The name of the potential child entity.
+ * @param ent The parent entity to check for the child entity.
+ * @return `true` if the parent entity contains a child entity with the specified name, `false` otherwise.
  */
-operator fun Entity.contains(entityName: String) : Boolean =
-    this.getAttributes().containsKey(entityName)
+infix fun String.isChildOf(ent: Entity) : Boolean =
+    ent.getChildren().any { it.getName() == this }
+
+/**
+ * Checks if the current string represents an attribute key of a given entity.
+ *
+ * @receiver The name of the potential attribute key.
+ * @param ent The entity to check for the attribute key.
+ * @return `true` if the entity contains an attribute with the specified key, `false` otherwise.
+ */
+infix fun String?.isAttributeOf(ent: Entity) : Boolean =
+    ent.getAttributes().containsKey(this)
 
 /**
  * Adds a child entity to the current entity.
@@ -74,17 +85,19 @@ infix fun LinkedHashMap<String,String>.insideAttributesOf(ent : Entity){
 }
 
 /**
- * Creates an entity with a given name and applies the provided builder function.
+ * Creates a document with the given name, version, and encoding, and applies the provided builder function
+ * to configure the root entity of the document.
  *
- * @param name The name of the entity.
- * @param build The builder function to configure the entity.
- * @return The created and configured entity.
+ * @param name The name of the document.
+ * @param version The version of the document.
+ * @param encoding The encoding of the document.
+ * @param build The builder function to configure the root entity of the document.
+ * @return The created and configured document.
  */
-fun entity(name: String, build: Entity.() -> Unit){
-    Entity(name).apply {
-        build(this)
+fun document(name: String, version: String, encoding: String, build: Entity.() -> Unit): Document =
+    Document(name, version, encoding).apply {
+        build(this.getRootEntity())
     }
-}
 
 /**
  * Adds a child entity with attributes and applies the provided builder function.
