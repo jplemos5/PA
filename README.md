@@ -199,20 +199,20 @@ annotation class XmlAdapter(val adapter: KClass<out Adapter>)
 ```
 #### Interfaces
 
-`Transformer`
-Interface for transforming a string value. Implement this interface to define custom transformation logic.
+#### `Transformer`
+- Interface for transforming a string value. Implement this interface to define custom transformation logic.
 
 **Functions:**
-`transform(input: String): String`: Transforms the input string value.
+- `transform(input: String): String`: Transforms the input string value.
 
 **Exceptions:**
 - `IllegalArgumentException` if the input is invalid or transformation fails.
 
-- `Adapter`
-Interface for adapting an entity after mapping it. Implement this interface to define custom adaptation logic.
+#### `Adapter`
+- Interface for adapting an entity after mapping it. Implement this interface to define custom adaptation logic.
 
 **Functions:**
-`adapt(input: Entity): Entity`: Adapts the input entity.
+- `adapt(input: Entity): Entity`: Adapts the input entity.
 
 **Exceptions:**
 - `IllegalArgumentException` if the input is invalid or adaptation fails.
@@ -222,27 +222,16 @@ Interface for adapting an entity after mapping it. Implement this interface to d
 This document provides a dsl to help the XML manipulation.
 
 **Operators:**
-#### `Division Operator (/) `
-This operator lets us find an Entity given an Entity and the name of the children we want to find.
+- `Division Operator (/)` - This operator lets us find an Entity given an Entity and the name of the children we want to find.
 
-#### `Get Operator ([...}) `
-This operator lets us find the value of a given attribute name.
+- `Get Operator ([...})` - This operator lets us find the value of a given attribute name.
 
 **Infixes:**
-#### `isChildOf`
-This infix checks if a string is a name of a children entity of a given entity.
-
-#### `isAttributeOf`
-This infix checks if a string is a name of an attribute of a given entity.
-
-#### `fatherOf`
-This infix given a list of entities sets all of them as children of another given entity.
-
-#### `inlineAttributesOf`
-This infix given a linked hashmap sets them as inline attributes of an entity.
-
-#### `insideAttributesOf`
-This infix given a linked hashmap sets them as inside attributes of an entity.
+- `isChildOf` - This infix checks if a string is a name of a children entity of a given entity.
+- `isAttributeOf` - This infix checks if a string is a name of an attribute of a given entity.
+- `fatherOf` - This infix given a list of entities sets all of them as children of another given entity.
+- `inlineAttributesOf` - This infix given a linked hashmap sets them as inline attributes of an entity.
+- `insideAttributesOf` - This infix given a linked hashmap sets them as inside attributes of an entity.
 
 **Implicit Lambda Instances:**
 - `document(name: String, version: String, encoding: String, build: Entity.() -> Unit)`: Creates a document with the given name, version, and encoding, and applies the provided builder function to configure the root entity of the document.
