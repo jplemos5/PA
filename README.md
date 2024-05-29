@@ -59,22 +59,22 @@ Document(name: String, var version: String, var encoding: String)
 
 **Functions:**
 
-| Function                       | Description                                                     | Usage                                     |
+| Function                       | Description                                                     | Usage                                   |
 | :--- | :--- | :--- |
-| `getVersion(): String`         | Gets the version of the document.                               | `document.getVersion()`                  |
-| `getEncoding(): String`        | Gets the encoding of the document.                              | `document.getEncoding()`                 |
+| `getVersion(): String`         | Gets the version of the document.                               | `document.getVersion()`                 |
+| `getEncoding(): String`        | Gets the encoding of the document.                              | `document.getEncoding()`                |
 | `setVersion(version: String)`  | Sets the version of the document.                               | `document.setVersion("1.0")`            |
 | `setEncoding(encoding: String)`| Sets the encoding of the document.                              | `document.setEncoding("UTF-8")`         |
 | `getRootEntity(): Entity`      | Gets the root entity of the document.                           | `document.getRootEntity()`              |
-| `prettyPrint(): String`        | Generates a pretty-printed string representation of the document. | `document.prettyPrint()`                |
+| `prettyPrint(): String`        | Generates a pretty-printed string representation of the document. | `document.prettyPrint()`              |
 | `writeToFile(fileName: String)`| Writes the document content to a file.                          | `document.writeToFile("output.xml")`    |
 
 
 **Exceptions:**
 
-| Exception                    | Description                                                |
+| Exception                    | Description                                               |
 | :--- | :--- |
-| `IllegalArgumentException`  | Thrown if the version or encoding is invalid.             |
+| `IllegalArgumentException`   | Thrown if the version or encoding is invalid.             |
 | `IOException`                | Thrown if an I/O error occurs while writing to the file.  |
 
 
