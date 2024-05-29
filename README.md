@@ -7,11 +7,11 @@ This project provides a set of Kotlin classes and functions to manipulate XML do
 - [Introduction](#introduction)
 - [Files Overview](#files-overview)
 - [Class Documentation](#class-documentation)
-  - [Document.kt](#document)
-  - [Entity.kt](#entity)
-  - [XMLClasses.kt](#xmlclasses)
-  - [Annotations.kt](#annotations)
-  - [DSL.kt](#dsl)
+  - [Document.kt](#documentkt)
+  - [Entity.kt](#entitykt)
+  - [XMLClasses.kt](#xmlclasseskt)
+  - [Annotations.kt](#annotationskt)
+  - [DSL.kt](#dslkt)
 - [License](#license)
 
 ## Introduction
@@ -41,7 +41,11 @@ This documentation will provide an overview of each file, describe the functions
    
 ## Class Documentation
 
-### Document
+<details>
+
+<summary>Document.kt</summary>
+
+### Document.kt
 
 The `Document` class represents a XML document with a root entity, version, and encoding.
 
@@ -82,8 +86,12 @@ try {
     e.printStackTrace()
 }
 ```
-### Entity
 
+</details>
+<details>
+<summary>Entity.kt</summary>
+
+### Entity.kt
 The `Entity` class represents a XML entity with a name, attributes, a parent, and children. It provides various functions to manipulate the entity and its hierarchy.
 
 #### Constructor
@@ -127,8 +135,11 @@ Entity(name: String, attributes: LinkedHashMap<String?, String> = linkedMapOf(),
 ```kotlin
 
 ```
-
-### XMLClasses
+</details>
+<details>
+  <summary>XMLClasses.kt</summary>
+  
+### XMLClasses.kt
 
 The `XMLClasses` file has a group of functions that help to create objects that can be automatically transformed into Entities.
 
@@ -143,8 +154,11 @@ The `XMLClasses` file has a group of functions that help to create objects that 
 ```kotlin
 
 ```
-
-### Annotations
+</details>
+<details>
+  <summary>Annotations.kt</summary>
+  
+### Annotations.kt
 
 This document provides an overview of the annotations and interfaces used for XML serialization in Kotlin.
 
@@ -216,8 +230,11 @@ annotation class XmlAdapter(val adapter: KClass<out Adapter>)
 
 **Exceptions:**
 - `IllegalArgumentException` if the input is invalid or adaptation fails.
+</details>
+<details>
+  <summary>DSL.kt</summary>
 
-### DSL
+### DSL.kt
 
 This document provides a dsl to help the XML manipulation.
 
@@ -252,3 +269,6 @@ This document provides a dsl to help the XML manipulation.
         }
     }
 ```
+</details>
+
+
