@@ -9,7 +9,7 @@ import java.lang.StringBuilder
  * @property entity The Root Entity of the document.
  * @throws IllegalArgumentException if the version or encoding is invalid.
  */
-class Document(name: String, private var version: String, private var encoding: String) {
+class Document(private var name: String, private var version: String, private var encoding: String) {
 
     init {
         require(version.matches(Regex("""\d+(\.\d+)*"""))) { "Invalid XML version format" }
