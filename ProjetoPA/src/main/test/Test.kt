@@ -6,11 +6,8 @@ import kotlin.reflect.full.*
 
 
 fun createDoc(rootName: String, version: String, encoding: String): Document {
-    // Criar um novo documento
+
     val doc = Document(rootName, version, encoding)
-
-    // Criar as entidades e adicionar ao documento
-
 
     val curso = Entity("curso", linkedMapOf())
     curso.addText("Mestrado em Engenharia Informática")
@@ -107,62 +104,43 @@ class Test {
     }
 
     @Test
-    fun testRemocaoDeEntidade() {
+    fun testRemoveEntity() {
         val doc = createDoc("plano", "1.0", "UTF-8")
-        // Adicionar a entidade fuc2
-//        val fuc2 = Entity("fuc", mutableMapOf("codigo" to "03782"))
-//        doc.getRootEntity().addChildEntity(fuc2)
-        // Remover a entidade fuc2
         val fuc = doc.getRootEntity().getChildren().find { it.getName() == "fuc" }
         doc.getRootEntity().removeChildEntity(fuc!!)
         assertFalse(doc.getRootEntity().getChildren().contains(fuc))
     }
 
     @Test
-    fun testAdicionarRemoverAlterarAtributosEmEntidades() {
+    fun testAddRemoveChangeAttributes() {
         val doc = createDoc("plano", "1.0", "UTF-8")
-
-        // Obter a entidade fuc
         val fuc = doc.getRootEntity().getChildren().find { it.getName() == "fuc" }
-
-
-        // Adicionar atributo
         fuc!!.addAttribute("novoAtributo", "valor")
         assertEquals("valor", fuc.getAttributes()["novoAtributo"])
-
-        // Remover atributo
         fuc.removeAttribute("codigo")
         assertNull(fuc.getAttributes()["codigo"])
-
-        // Alterar atributo
         fuc.changeAttribute("novoAtributo", "novoValor")
         assertEquals("novoValor", fuc.getAttributes()["novoAtributo"])
     }
 
     @Test
-    fun testAcederEntidadeMaeEEntidadesFilhasDeUmaEntidade() {
+    fun testGetChildEntitiesAndParents() {
         val doc = createDoc("plano", "1.0", "UTF-8")
         val fuc = doc.getRootEntity().getChildren().find { it.getName() == "fuc" }
-
         assertEquals(doc.getRootEntity(), fuc!!.getParent())
-
-        // Adicionar entidades filhas a fuc1
         val nomeFuc1 = Entity("nome", linkedMapOf(), fuc)
         val ectsFuc1 = Entity("ects", linkedMapOf(), fuc)
         fuc.addChildEntity(nomeFuc1)
         fuc.addChildEntity(ectsFuc1)
-
         assertTrue(fuc.getChildren().contains(nomeFuc1))
         assertTrue(fuc.getChildren().contains(ectsFuc1))
     }
 
     @Test
-    fun testPrettyPrintFormatoStringEscritaArquivo() {
+    fun testPrettyPrintFormat() {
         val doc = createDoc("plano", "1.0", "UTF-8")
-
         val prettyPrintString = doc.prettyPrint()
         assertTrue(prettyPrintString.isNotBlank())
-
         val fileName = "TesteDocumento.xml"
         doc.writeToFile(fileName)
         val fileContent = File(fileName).readText()
@@ -170,22 +148,19 @@ class Test {
     }
 
     @Test
-    fun testVarrimentoDocumentoComObjetosVisitantes() {
+    fun testGoThroughWithVisitor() {
         val doc = createDoc("plano", "1.0", "UTF-8")
         val entityListResult = doc.getRootEntity().entityList()
-
         val expectedList = listOf(
             "plano", "curso", "fuc", "nome", "ects", "avaliacao",
             "componente", "componente", "fuc", "nome", "ects",
             "avaliacao", "componente", "componente", "componente"
         )
-
         assertEquals(expectedList, entityListResult)
     }
 
     @Test
-    fun testAdicionarAtributosGlobalmenteAoDocumento() {
-        val doc = createDoc("plano", "1.0", "UTF-8")
+    fun testAddAttributesGlobally() {
         val attributeName = "Ditado"
         val attributeValue = "12%"
         val entityName = "componente"
@@ -207,8 +182,7 @@ class Test {
     }
 
     @Test
-    fun testRenomearEntidadesGlobalmente(){
-        val doc = createDoc("plano", "1.0", "UTF-8")
+    fun testRenameEntitiesGlobally(){
         val oldName = "fuc"
         val newName = "test"
         val alteredDoc =  createDoc("plano", "1.0", "UTF-8")
@@ -237,8 +211,7 @@ class Test {
     }
 
     @Test
-    fun testRenomearAtributosGlobalmente(){
-        val doc = createDoc("plano", "1.0", "UTF-8")
+    fun testRenameAttributesGlobally(){
         val entityName = "componente"
         val oldName = "nome"
         val newName = "name"
@@ -259,8 +232,7 @@ class Test {
     }
 
     @Test
-    fun testRemoverEntidadesGlobalmente(){
-        val doc = createDoc("plano", "1.0", "UTF-8")
+    fun testRemoveEntitiesGlobally(){
         val entityName = "componente"
         val alteredDoc = createDoc("plano", "1.0", "UTF-8")
         alteredDoc.getRootEntity().globalRemoveEntity(entityName)
@@ -277,8 +249,7 @@ class Test {
     }
 
     @Test
-    fun testRemoverAtributosGlobalmente(){
-        val doc = createDoc("plano", "1.0", "UTF-8")
+    fun testRemoveAttributesGlobally(){
         val entityName = "componente"
         val attributeName = "peso"
         val alteredDoc = createDoc("plano", "1.0", "UTF-8")
@@ -298,7 +269,7 @@ class Test {
     }
 
     @Test
-    fun testPrintXPathGlobalmente(){
+    fun testPrintXPathGlobally(){
         val original = "<componente nome=\"Quizzes\" peso=\"20%\"/>\n" +
                 "<componente nome=\"Projeto\" peso=\"80%\"/>\n" +
                 "<componente nome=\"Dissertação\" peso=\"60%\"/>\n" +

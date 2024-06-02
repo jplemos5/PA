@@ -101,7 +101,7 @@ private fun handleProperties(obj:Any, property:KProperty<*>, father: Entity){
     }
     else if(property.hasAnnotation<InlineAttribute>())
         father.addAttribute(getXmlAttributeName(property), attributeValue)
-    else { //Onde se adiciona os atributos com text
+    else {
         currentEntity.addText(attributeValue)
         father.addChildEntity(currentEntity)
     }
