@@ -1,6 +1,8 @@
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.io.File
+import kotlin.reflect.full.*
 
 
 fun createDoc(rootName: String, version: String, encoding: String): Document {
@@ -67,9 +69,37 @@ fun createDoc(rootName: String, version: String, encoding: String): Document {
 
 class Test {
 
+    //Document.kt
+    @Test
+    fun testSetAndGetVersion(){
+        val documentTest  = Document("artists","1.0", "UTF-8")
+        documentTest.setVersion("24.0")
+        assertEquals(documentTest.getVersion(), "24.0")
+    }
 
     @Test
-    fun testAdicaoDeEntidade() {
+    fun testSetAndGetEncoding(){
+        val documentTest  = Document("artists","1.0", "UTF-8")
+        documentTest.setEncoding("PA")
+        assertEquals(documentTest.getEncoding(), "PA")
+    }
+
+    //Entity.kt
+
+    @Test
+    fun testEntityCreationException() {
+        assertThrows<IllegalArgumentException> { Entity("") }
+    }
+
+    @Test
+    fun testAttributeAdditionException() {
+        val root = Entity("root")
+        assertThrows<IllegalArgumentException> { root.addAttribute("", "") }
+    }
+
+
+    @Test
+    fun testAddEntity() {
         val doc = createDoc("plano", "1.0", "UTF-8")
         val novaEntidade = Entity("novaEntidade", linkedMapOf())
         doc.getRootEntity().addChildEntity(novaEntidade)
@@ -279,6 +309,45 @@ class Test {
         assertEquals(original,xPath)
     }
 
+    //Annotations.kt
+
+    @XmlEntity("fuc")
+    data class Course(
+        @XmlAttributeName("codigo") val code: String,
+        @InlineAttribute val name: String,
+        val ects: Int
+    )
+
+    @Test
+    fun testXmlEntityAnnotation() {
+        val xmlEntityAnnotation = Course::class.findAnnotation<XmlEntity>()
+        assertNotNull(xmlEntityAnnotation)
+        assertEquals("fuc", xmlEntityAnnotation?.name)
+    }
+
+    @Test
+    fun testXmlAttributeNameAnnotation() {
+        val codeProperty = Course::class.members.find { it.name == "code" }
+        val xmlAttributeNameAnnotation = codeProperty?.findAnnotation<XmlAttributeName>()
+        assertNotNull(xmlAttributeNameAnnotation)
+        assertEquals("codigo", xmlAttributeNameAnnotation?.name)
+    }
+
+    @Test
+    fun testInlineAttributeAnnotation() {
+        val nameProperty = Course::class.members.find { it.name == "name" }
+        val inlineAttributeAnnotation = nameProperty?.findAnnotation<InlineAttribute>()
+        assertNotNull(inlineAttributeAnnotation)
+    }
+
+
+    class Exclude(private val entityName: String) : Adapter {
+        override fun adapt(input: Entity): Entity {
+            input.globalRemoveEntity(entityName)
+            return input
+        }
+    }
+
     class AddPercentage : Transformer {
         override fun transform(input: String): String = "$input%"
     }
@@ -287,18 +356,203 @@ class Test {
         override fun transform(input: String): String = "($input)"
     }
 
+
+    @Test
+    fun testAddPercentageTransformer() {
+        val transformer = AddPercentage()
+        val input = "50"
+        val output = transformer.transform(input)
+        assertEquals("50%", output)
+    }
+
+    @Test
+    fun testAddParenthesisTransformer() {
+        val transformer = AddParenthesis()
+        val input = "test"
+        val output = transformer.transform(input)
+        assertEquals("(test)", output)
+    }
+
+    class XmlValueTransformer(private val transformFunction: (String) -> String) : Transformer {
+        override fun transform(input: String): String = transformFunction(input)
+    }
+
+    class XmlAdapter(private val adaptFunction: (Entity) -> Entity) : Adapter {
+        override fun adapt(input: Entity): Entity = adaptFunction(input)
+    }
+
+
     class ChangeAttribute : Adapter {
         override fun adapt(input: Entity): Entity {
-            input.changeAttribute("code", "M!@!@#!#")
+            input.changeAttribute("code", "teste")
             return input
         }
     }
 
     class ChangeEntityName : Adapter {
         override fun adapt(input: Entity): Entity {
-            input.globalRenameEntity("avaliacao", "TESTTTTTTTTT")
+            input.globalRenameEntity("curso", "test")
             return input
         }
+    }
+
+    @Test
+    fun testChangeAttributeAdapter() {
+        val adapter = ChangeAttribute()
+        val entity = Entity("exampleEntity", linkedMapOf("code" to "M1234"))
+        val adaptedEntity = adapter.adapt(entity)
+        assertEquals("teste", adaptedEntity.getAttributes()["code"])
+    }
+
+    @Test
+    fun testChangeEntityNameAdapter() {
+        val adapter = ChangeEntityName()
+        val avaliacaoEntity = Entity(name = "avaliacao")
+        val cursoEntity = Entity("curso")
+        avaliacaoEntity.addChildEntity(cursoEntity)
+        val adaptedEntity = adapter.adapt(cursoEntity)
+        assertEquals("test", adaptedEntity.getName())
+    }
+
+    @Test
+    fun testExcludeAdapter() {
+        val rootEntity = Entity("plano")
+        val cursoEntity = Entity("curso")
+        rootEntity.addChildEntity(cursoEntity)
+        val avaliacaoEntity = Entity("avaliacao")
+        cursoEntity.addChildEntity(avaliacaoEntity)
+        val adapter = Exclude("avaliacao")
+        adapter.adapt(rootEntity)
+        val entityNames = rootEntity.entityList()
+        assertFalse("avaliacao" in entityNames)
+    }
+
+    @Test
+    fun testXmlValueTransformer() {
+        val transformer = XmlValueTransformer { input -> "<tag>$input</tag>" }
+        val transformedValue = transformer.transform("valor")
+        assertEquals("<tag>valor</tag>", transformedValue)
+    }
+
+
+    @Test
+    fun testXmlAdapter() {
+        val rootEntity = Entity("plano")
+        val cursoEntity = Entity("curso")
+        rootEntity.addChildEntity(cursoEntity)
+        val adapter = XmlAdapter { entity ->
+            entity.globalRenameEntity("curso", "course")
+            entity
+        }
+        val adaptedEntity = adapter.adapt(rootEntity)
+        val entityNames = adaptedEntity.entityList()
+        assertEquals(false, "curso" in entityNames)
+    }
+
+    //DSL.kt
+
+    @Test
+    fun testAddChildEntity() {
+        val rootEntity = Entity("root")
+        val childEntity = Entity("child")
+        rootEntity fatherOf childEntity
+        assertEquals(childEntity, rootEntity.getChildren().first())
+    }
+
+    @Test
+    fun testDocumentAndChildEntity(){
+        val documentDSL  = document("artists","1.0", "UTF-8") {
+            childEntity("beatles", linkedMapOf("nome" to "Dissertação", "peso" to "60%")) {
+            }
+        }
+        val actualPrettyPrint = documentDSL.prettyPrint()
+        val expectedPrettyPrint = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <artists>
+            <beatles nome="Dissertação" peso="60%"/>
+        </artists>
+        """.trimIndent()
+        assertEquals(expectedPrettyPrint, actualPrettyPrint, "Expected and actual documents do not match")
+
+    }
+
+    @Test
+    fun testAddAttribute() {
+        val entity = Entity("entity")
+        entity.attributeName("attr", "value")
+        assertEquals("value", entity["attr"])
+    }
+
+    @Test
+    fun testAddText() {
+        val rootEntity = Entity("root")
+        val childEntity = Entity("child")
+        rootEntity fatherOf childEntity
+        childEntity.text("text")
+        assertEquals("text", childEntity.getText())
+    }
+
+    @Test
+    fun testIsChildOf() {
+        val parent = Entity("parent")
+        val child = Entity("child")
+        parent fatherOf child
+        assertEquals(true, "child" isChildOf parent)
+    }
+
+    @Test
+    fun testIsAttributeOf() {
+        val entity = Entity("entity")
+        entity.attributeName("attr", "value")
+        assertEquals(true, "attr" isAttributeOf entity)
+    }
+
+    @Test
+    fun testInlineAttributesOf() {
+        val entity = Entity("entity")
+        val attributes = linkedMapOf("attr1" to "value1", "attr2" to "value2")
+        attributes.inlineAttributesOf(entity)
+        val expectedPrettyPrint = "<entity attr1=\"value1\" attr2=\"value2\"/>"
+        val actualPrettyPrint = entity.prettyPrint()
+        assertEquals(expectedPrettyPrint, actualPrettyPrint, "Expected and actual pretty prints do not match")
+    }
+
+    @Test
+    fun testInsideAttributesOf() {
+        val entity = Entity("entity")
+        val attributes = linkedMapOf("attr1" to "value1")
+        attributes.insideAttributesOf(entity)
+        val expectedPrettyPrint = "<entity>\n    <attr1>value1</attr1>\n</entity>"
+        val actualPrettyPrint = entity.prettyPrint()
+        assertEquals(expectedPrettyPrint, actualPrettyPrint, "Expected and actual pretty prints do not match")
+    }
+
+    @Test
+    fun testDivOperator(){
+        val fuc = Entity("fuc")
+        val componente = Entity("componente")
+        fuc fatherOf componente
+        assertEquals(componente,fuc / "componente" )
+    }
+
+    @Test
+    fun testGetOperator(){
+        val fuc = Entity("fuc")
+        val componente = Entity("componente", linkedMapOf("valor" to "20"))
+        fuc fatherOf componente
+        assertEquals("20",(fuc / "componente")["valor"] )
+    }
+    
+
+    // XMLClasses.kt
+    @Test
+    fun testisValidEntityName(){
+        assertFalse(isValidEntityName("1errado"))
+    }
+
+    @Test
+    fun testisValidAttributeName(){
+        assertFalse(isValidAttributeName(""))
     }
 
 

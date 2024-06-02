@@ -51,7 +51,7 @@ class Entity(private var name: String, private var attributes: LinkedHashMap<Str
      * @return The text content of the entity.
      */
     fun getText() : String {
-        if(attributes.size == 1 && attributes.keys.first() === "") return attributes.values.first()
+        if(attributes.size == 1 && attributes.keys.first() == null) return attributes.values.first()
         return "Doesn't have text!"
     }
 
@@ -100,6 +100,7 @@ class Entity(private var name: String, private var attributes: LinkedHashMap<Str
     fun addAttribute(attributeName: String, attributeValue: String) {
         if(isValidAttributeName(attributeName) && attributeValue != "")
             attributes[attributeName] = attributeValue
+        else throw IllegalArgumentException("Invalid Attribute Name")
     }
 
     /**
